@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <form id="loginForm" class="form-box">
+            <h1>Welcome Back</h1>
+            <p style="text-align:center; color:#64748b; margin-top:-15px; margin-bottom:24px; font-size:14px;">Sign in to your SkillSwap account</p>
+
+            <label for="email">Email Address</label>
+            <input type="text" id="email" placeholder="name@example.com">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+            <p class="error-msg" id="errorMsg"></p>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+            <p style="text-align:center; margin-top:20px; font-size:14px; color:#64748b;">
+                Don't have an account? <a href="register.html" style="color:#2563eb; font-weight:600;">Register here</a>
+            </p>
+        </form>
+
+        <div id="roleSelectBox" class="form-box" style="display:none; text-align:center;">
+            <h1>Choose a Profile</h1>
+            <p style="color:#64748b; margin-bottom:20px;">This email has more than one profile. Continue as:</p>
+            <div id="roleButtons" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let form = document.getElementById("loginForm");
+        let errorMsg = document.getElementById("errorMsg");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value;
+
+            // The admin account is hardcoded and cannot be registered by anyone
+            if (email === ADMIN_USER.email && password === ADMIN_USER.password) {
+                sessionStorage.setItem("currentUserId", ADMIN_USER.id);
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            let users = getUsers();
+            let matches = users.filter(u => u.email === email && u.password === password);
+
+            if (matches.length === 0) {
+                errorMsg.textContent = "Invalid email or password.";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            errorMsg.style.display = "none";
+
+            if (matches.length === 1) {
+                // only one profile for this email - log straight in
+                sessionStorage.setItem("currentUserId", matches[0].id);
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            // more than one profile matched (e.g. this email has both a
+            // Teacher profile and a Learner profile) - let the user pick one
+            form.style.display = "none";
+            let roleSelectBox = document.getElementById("roleSelectBox");
+            let roleButtons = document.getElementById("roleButtons");
+            roleSelectBox.style.display = "block";
+            roleButtons.innerHTML = "";
+
+            matches.forEach((matchedProfile) => {
+                let roleLabel = matchedProfile.role.charAt(0).toUpperCase() + matchedProfile.role.slice(1);
+                let btn = document.createElement("button");
+                btn.className = "btn btn-primary";
+                btn.textContent = `Continue as ${roleLabel}`;
+                btn.addEventListener("click", () => {
+                    sessionStorage.setItem("currentUserId", matchedProfile.id);
+                    window.location.href = "dashboard.html";
+                });
+                roleButtons.appendChild(btn);
+            });
+        });
+    </script>
+</body>
+</html>

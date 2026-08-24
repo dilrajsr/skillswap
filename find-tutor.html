@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Find a Tutor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div id="blockedView" style="display:none;">
+            <h1>Find a Tutor</h1>
+            <p style="color:#64748b;">Teachers don't use Find Tutor. Head to your <a href="skills.html" style="color:#2563eb; font-weight:600;">Teaching section</a> instead.</p>
+        </div>
+
+        <div id="tutorListView" style="display:none;">
+            <h1>Find a Tutor</h1>
+            <p style="color:#64748b; margin-bottom:24px;">Discover verified peer tutors on SkillSwap. Search by tutor name or skill, or sort by tutor rank.</p>
+
+            <div style="display:flex; gap:16px; margin-bottom:32px; flex-wrap:wrap;">
+                <input type="text" id="searchInput" placeholder="🔍 Search by tutor name or skill (e.g. Python, Design)..." style="flex:1; min-width:260px; margin-bottom:0;">
+                <button class="btn btn-secondary" id="sortBtn">Sort by Rank 🏆</button>
+            </div>
+
+            <div class="grid" id="tutorContainer"></div>
+            <p id="noTutors" style="display:none; color:#64748b; margin-top:20px; font-weight:500;">No teachers have registered yet. Check back soon!</p>
+        </div>
+
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+        if (!user) throw new Error("Not logged in");
+
+        if (user.role === "teacher") {
+            document.getElementById("blockedView").style.display = "block";
+        } else {
+            document.getElementById("tutorListView").style.display = "block";
+            setupFindTutor();
+        }
+
+        function setupFindTutor() {
+            let allTutors = getTutors();
+
+            let tutorContainer = document.getElementById("tutorContainer");
+            let noTutors = document.getElementById("noTutors");
+            let searchInput = document.getElementById("searchInput");
+            let sortBtn = document.getElementById("sortBtn");
+            let sortedDescending = true;
+
+            function displayTutors(tutorArray) {
+                tutorContainer.innerHTML = "";
+
+                if (tutorArray.length === 0) {
+                    noTutors.style.display = "block";
+                    return;
+                }
+                noTutors.style.display = "none";
+
+                tutorArray.forEach((tutor) => {
+                    let skillsText = tutor.teachSkills.length > 0 ? tutor.teachSkills.join(", ") : "No skills listed yet";
+                    let card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <h3>${tutor.name}</h3>
+                        <p>Teaches: ${skillsText}</p>
+                        <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
+                        <button class="btn btn-primary connectBtn" data-id="${tutor.id}">Get Connected</button>
+                    `;
+                    tutorContainer.appendChild(card);
+                });
+
+                document.querySelectorAll(".connectBtn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        let id = e.target.getAttribute("data-id");
+                        let tutor = getUsers().find(u => u.id === id);
+                        if (tutor) startConnection(tutor);
+                    });
+                });
+            }
+
+            displayTutors(allTutors);
+
+            searchInput.addEventListener("input", () => {
+                let query = searchInput.value.toLowerCase();
+                let filtered = allTutors.filter((tutor) => {
+                    let nameMatch = tutor.name.toLowerCase().includes(query);
+                    let skillMatch = tutor.teachSkills.some(skill => skill.toLowerCase().includes(query));
+                    return nameMatch || skillMatch;
+                });
+                displayTutors(filtered);
+            });
+
+            sortBtn.addEventListener("click", () => {
+                let sorted = [...allTutors].sort((a, b) => {
+                    return sortedDescending ? b.coins - a.coins : a.coins - b.coins;
+                });
+                sortedDescending = !sortedDescending;
+                displayTutors(sorted);
+            });
+        }
+    </script>
+</body>
+</html>

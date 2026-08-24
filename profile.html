@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Profile Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <form id="profileForm" class="form-box">
+            <h1>Edit Profile</h1>
+            <p id="roleNote" style="text-align:center; color:#64748b; font-size:14px; margin-top:-15px; margin-bottom:20px; font-weight:600;"></p>
+
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Your display name">
+
+            <label for="email">Email Address (Read-only)</label>
+            <input type="text" id="email" disabled>
+
+            <label for="bio">About Me &amp; Experience</label>
+            <textarea id="bio" rows="4" placeholder="Tell other learners about your skills, background, and teaching style..."></textarea>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <p class="success-msg" id="successMsg">✓ Profile updated successfully!</p>
+        </form>
+
+        <div id="adminNotice" class="form-box" style="display:none; text-align:center;">
+            <h1>Admin Profile</h1>
+            <p style="color:#64748b; margin-top:10px;">The system administrator account is fixed in the code and cannot be edited.</p>
+        </div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+
+        let nameInput = document.getElementById("name");
+        let emailInput = document.getElementById("email");
+        let bioInput = document.getElementById("bio");
+        let profileForm = document.getElementById("profileForm");
+        let successMsg = document.getElementById("successMsg");
+
+        if (user && user.role === "admin") {
+            profileForm.style.display = "none";
+            document.getElementById("adminNotice").style.display = "block";
+        } else if (user) {
+            nameInput.value = user.name;
+            emailInput.value = user.email;
+            bioInput.value = user.bio || "";
+            let roleLabel = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            document.getElementById("roleNote").textContent = `Editing your ${roleLabel} profile`;
+        }
+
+        profileForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            if (nameInput.value.trim() == "") {
+                alert("Name cannot be empty.");
+                return;
+            }
+
+            user.name = nameInput.value.trim();
+            user.bio = bioInput.value.trim();
+            updateCurrentUser(user);
+
+            successMsg.style.display = "block";
+        });
+    </script>
+</body>
+</html>

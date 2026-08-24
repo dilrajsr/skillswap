@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - My Sessions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>My Sessions</h1>
+        <p style="color:#64748b; margin-bottom:24px;">Your complete history of collaborative learning and teaching sessions.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th id="otherPersonHeader">With</th>
+                    <th>Skill</th>
+                    <th>Status</th>
+                    <th>Coins Earned</th>
+                    <th>Started</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="sessionRows"></tbody>
+        </table>
+        <p id="noSessions" style="display:none; margin-top:24px; color:#64748b; font-weight:500;">You have no sessions yet.</p>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+        if (!user) throw new Error("Not logged in");
+
+        let sessionRows = document.getElementById("sessionRows");
+        let noSessions = document.getElementById("noSessions");
+        let coinsForTeaching = 40;
+        let coinsForAttending = 10;
+
+        if (user.role === "teacher") {
+            document.getElementById("otherPersonHeader").textContent = "Learner";
+        } else {
+            document.getElementById("otherPersonHeader").textContent = "Tutor";
+        }
+
+        function displaySessions() {
+            if (user.role === "admin") {
+                noSessions.textContent = "Admins don't have sessions. Visit the Dashboard for a full overview.";
+                noSessions.style.display = "block";
+                return;
+            }
+
+            let connections = getConnections();
+            let myConnections = connections.filter((c) => {
+                return user.role === "teacher" ? c.teacherId === user.id : c.learnerId === user.id;
+            });
+
+            sessionRows.innerHTML = "";
+
+            if (myConnections.length === 0) {
+                noSessions.textContent = "You have no sessions yet.";
+                noSessions.style.display = "block";
+                return;
+            }
+            noSessions.style.display = "none";
+
+            myConnections.forEach((connection) => {
+                let otherPersonName = user.role === "teacher" ? connection.learnerName : connection.teacherName;
+                let coinsEarned = connection.status === "ended"
+                    ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">🪙 +${user.role === "teacher" ? coinsForTeaching : coinsForAttending}</span>`
+                    : `<span style="color:#94a3b8;">Pending</span>`;
+                let statusBadge = connection.status === "active"
+                    ? `<span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">🟢 Active</span>`
+                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Completed</span>`;
+                let actionCell = connection.status === "active"
+                    ? `<a href="chat.html" class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;">Continue &rarr;</a>`
+                    : `<span style="color:#94a3b8;">-</span>`;
+
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><strong>${otherPersonName}</strong></td>
+                    <td><strong>${connection.skill}</strong></td>
+                    <td>${statusBadge}</td>
+                    <td>${coinsEarned}</td>
+                    <td style="color:#64748b;">${connection.startedAt}</td>
+                    <td>${actionCell}</td>
+                `;
+                sessionRows.appendChild(row);
+            });
+        }
+
+        displaySessions();
+    </script>
+</body>
+</html>

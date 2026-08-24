@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Skills Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <!-- Teacher view -->
+        <div id="teacherView" style="display:none;">
+            <h1>Teaching Skills</h1>
+            <p style="color:#64748b; margin-bottom:30px;">Add the skills you can teach. As soon as you add one, learners can discover you in Find Tutor.</p>
+
+            <div class="card" style="width:100%; max-width:540px; margin:0 auto;">
+                <h3>Skills I Can Teach</h3>
+                <p style="color:#64748b; font-size:0.875rem; margin-bottom:16px;">Type a skill or subject below and click Add.</p>
+                <div class="skill-add-row">
+                    <input type="text" id="teachInput" placeholder="e.g. Python, Graphic Design, Piano...">
+                    <button class="btn btn-primary" id="addTeachBtn">+ Add</button>
+                </div>
+                <ul class="skill-list" id="teachList"></ul>
+            </div>
+        </div>
+
+        <!-- Learner view -->
+        <div id="learnerView" style="display:none;">
+            <h1>Learning Goals</h1>
+            <p style="color:#64748b; margin-bottom:30px;">Add skills you want to learn to keep track of your personal learning goals.</p>
+
+            <div class="card" style="width:100%; max-width:540px; margin:0 auto;">
+                <h3>Skills I Want to Learn</h3>
+                <p style="color:#64748b; font-size:0.875rem; margin-bottom:16px;">Type a skill you wish to master and click Add.</p>
+                <div class="skill-add-row">
+                    <input type="text" id="learnInput" placeholder="e.g. Photography, French, Web Dev...">
+                    <button class="btn btn-primary" id="addLearnBtn">+ Add</button>
+                </div>
+                <ul class="skill-list" id="learnList"></ul>
+            </div>
+        </div>
+
+        <!-- Admin view -->
+        <div id="adminView" style="display:none;">
+            <h1>Skills Overview</h1>
+            <p style="color:#64748b;">Admins don't teach or learn skills. Visit the Dashboard for a full platform overview.</p>
+        </div>
+
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+  
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+        if (!user) throw new Error("Not logged in");
+
+        // ----- Show only the section that matches this profile's role -----
+        if (user.role === "teacher") {
+            document.getElementById("teacherView").style.display = "block";
+        } else if (user.role === "learner") {
+            document.getElementById("learnerView").style.display = "block";
+        } else {
+            document.getElementById("adminView").style.display = "block";
+        }
+
+        let teachList = document.getElementById("teachList");
+        let learnList = document.getElementById("learnList");
+        let teachInput = document.getElementById("teachInput");
+        let learnInput = document.getElementById("learnInput");
+
+        function displaySkills() {
+            if (teachList) {
+                teachList.innerHTML = "";
+                user.teachSkills.forEach((skill, index) => {
+                    let li = document.createElement("li");
+                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeTeachBtn">Remove</button>`;
+                    teachList.appendChild(li);
+                });
+                document.querySelectorAll(".removeTeachBtn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        let index = e.target.getAttribute("data-index");
+                        user.teachSkills.splice(index, 1);
+                        updateCurrentUser(user);
+                        displaySkills();
+                    });
+                });
+            }
+
+            if (learnList) {
+                learnList.innerHTML = "";
+                user.learnSkills.forEach((skill, index) => {
+                    let li = document.createElement("li");
+                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeLearnBtn">Remove</button>`;
+                    learnList.appendChild(li);
+                });
+                document.querySelectorAll(".removeLearnBtn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        let index = e.target.getAttribute("data-index");
+                        user.learnSkills.splice(index, 1);
+                        updateCurrentUser(user);
+                        displaySkills();
+                    });
+                });
+            }
+        }
+
+        displaySkills();
+
+        if (teachInput) {
+            document.getElementById("addTeachBtn").addEventListener("click", () => {
+                let value = teachInput.value.trim();
+                if (value == "") {
+                    alert("Please enter a skill.");
+                    return;
+                }
+                user.teachSkills.push(value);
+                updateCurrentUser(user);
+                teachInput.value = "";
+                displaySkills();
+            });
+            teachInput.addEventListener("keydown", (e) => {
+                if (e.key == "Enter") document.getElementById("addTeachBtn").click();
+            });
+        }
+
+        if (learnInput) {
+            document.getElementById("addLearnBtn").addEventListener("click", () => {
+                let value = learnInput.value.trim();
+                if (value == "") {
+                    alert("Please enter a skill.");
+                    return;
+                }
+                user.learnSkills.push(value);
+                updateCurrentUser(user);
+                learnInput.value = "";
+                displaySkills();
+            });
+            learnInput.addEventListener("keydown", (e) => {
+                if (e.key == "Enter") document.getElementById("addLearnBtn").click();
+            });
+        }
+    </script>
+</body>
+</html>

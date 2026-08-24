@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Coins & Ranking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Coins &amp; Ranking</h1>
+        <p style="color:#64748b; margin-bottom:28px;" id="coinsExplainer">Skill Coins are earned by completing sessions. Teachers earn 40 coins per session taught, learners earn 10 coins per session attended.</p>
+
+        <div class="coin-summary">
+            <div class="card stat-card" style="flex:1; min-width:200px;">
+                <p class="stat-label">Current Balance</p>
+                <div class="coin-balance" id="coinBalance">0</div>
+                <span style="font-size:13px; color:#64748b; font-weight:600;">🪙 Skill Coins</span>
+            </div>
+            <div class="card stat-card" style="flex:1; min-width:200px;">
+                <p class="stat-label">Tutor Rank</p>
+                <div class="coin-balance" id="rankValue" style="color:#d97706;">-</div>
+                <span style="font-size:13px; color:#64748b; font-weight:600;">Leaderboard standing</span>
+            </div>
+            <div class="card stat-card" style="flex:1; min-width:200px;">
+                <p class="stat-label">Reputation</p>
+                <div class="coin-balance" id="repValue">0</div>
+                <span style="font-size:13px; color:#64748b; font-weight:600;">out of 5.0 rating</span>
+            </div>
+            <div class="card stat-card" style="flex:1; min-width:200px;">
+                <p class="stat-label" id="skillsStatLabel">Skills</p>
+                <div class="coin-balance" id="skillsCount" style="color:#16a34a;">0</div>
+                <span style="font-size:13px; color:#64748b; font-weight:600;">Active in profile</span>
+            </div>
+        </div>
+
+        <h2 style="text-align:left; font-size:22px; margin-top:20px;">Tutor Leaderboard</h2>
+        <table style="margin-bottom:44px;">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Coins Earned</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardRows"></tbody>
+        </table>
+
+        <h2 style="text-align:left; font-size:22px; margin-top:20px;">Learner Leaderboard</h2>
+        <table style="margin-bottom:44px;">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Coins Earned</th>
+                </tr>
+            </thead>
+            <tbody id="learnerLeaderboardRows"></tbody>
+        </table>
+
+        <h2 style="text-align:left; font-size:22px;">Coin Activity Log</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="historyRows"></tbody>
+        </table>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+
+        if (user) {
+            document.getElementById("coinBalance").textContent = user.coins;
+            document.getElementById("repValue").textContent = user.reputation;
+
+            if (user.role === "teacher") {
+                document.getElementById("skillsStatLabel").textContent = "Skills Taught";
+                document.getElementById("skillsCount").textContent = user.teachSkills.length;
+            } else if (user.role === "learner") {
+                document.getElementById("skillsStatLabel").textContent = "Skills Learning";
+                document.getElementById("skillsCount").textContent = user.learnSkills.length;
+            } else {
+                document.getElementById("skillsStatLabel").textContent = "Skills";
+                document.getElementById("skillsCount").textContent = "-";
+            }
+
+            // ----- Build the leaderboard: tutors only, ranked by coins earned teaching -----
+            let ranked = getTutors().sort((a, b) => b.coins - a.coins);
+            let leaderboardRows = document.getElementById("leaderboardRows");
+
+            if (ranked.length === 0) {
+                leaderboardRows.innerHTML = `<tr><td colspan="3">No tutors yet.</td></tr>`;
+            }
+
+            if (user.role !== "teacher" && user.role !== "learner") {
+                document.getElementById("rankValue").textContent = "-";
+            }
+
+            ranked.forEach((person, index) => {
+                let rank = index + 1;
+                let row = document.createElement("tr");
+                let isCurrentUser = person.id === user.id;
+
+                if (isCurrentUser) {
+                    row.style.backgroundColor = "#eff6ff";
+                    row.style.fontWeight = "bold";
+                }
+
+                let rankBadge = rank === 1 ? "🥇 #1" : (rank === 2 ? "🥈 #2" : (rank === 3 ? "🥉 #3" : `#${rank}`));
+
+                row.innerHTML = `
+                    <td><strong>${rankBadge}</strong></td>
+                    <td>${person.name}${isCurrentUser ? " <span style='color:#2563eb;'>(You)</span>" : ""}</td>
+                    <td><strong>🪙 ${person.coins}</strong></td>
+                `;
+                leaderboardRows.appendChild(row);
+
+                if (isCurrentUser && user.role === "teacher") {
+                    document.getElementById("rankValue").textContent = `#${rank}`;
+                }
+            });
+
+            // ----- Build the leaderboard: learners only, ranked by coins earned attending -----
+            let rankedLearners = getLearners().sort((a, b) => b.coins - a.coins);
+            let learnerLeaderboardRows = document.getElementById("learnerLeaderboardRows");
+
+            if (rankedLearners.length === 0) {
+                learnerLeaderboardRows.innerHTML = `<tr><td colspan="3">No learners yet.</td></tr>`;
+            }
+
+            rankedLearners.forEach((person, index) => {
+                let rank = index + 1;
+                let row = document.createElement("tr");
+                let isCurrentUser = person.id === user.id;
+
+                if (isCurrentUser) {
+                    row.style.backgroundColor = "#eff6ff";
+                    row.style.fontWeight = "bold";
+                }
+
+                let rankBadge = rank === 1 ? "🥇 #1" : (rank === 2 ? "🥈 #2" : (rank === 3 ? "🥉 #3" : `#${rank}`));
+
+                row.innerHTML = `
+                    <td><strong>${rankBadge}</strong></td>
+                    <td>${person.name}${isCurrentUser ? " <span style='color:#2563eb;'>(You)</span>" : ""}</td>
+                    <td><strong>🪙 ${person.coins}</strong></td>
+                `;
+                learnerLeaderboardRows.appendChild(row);
+
+                if (isCurrentUser && user.role === "learner") {
+                    document.getElementById("rankValue").textContent = `#${rank}`;
+                }
+            });
+
+            // ----- Coin activity history -----
+            let history = user.coinHistory || [];
+            let historyRows = document.getElementById("historyRows");
+
+            if (history.length === 0) {
+                historyRows.innerHTML = `<tr><td colspan="3" style="color:#64748b;">No coin activity yet.</td></tr>`;
+            }
+
+            history.forEach((entry) => {
+                let row = document.createElement("tr");
+                let amountText = entry.amount > 0 ? `+${entry.amount}` : entry.amount;
+                row.innerHTML = `
+                    <td>${entry.desc}</td>
+                    <td><span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">🪙 ${amountText}</span></td>
+                    <td style="color:#64748b;">${entry.date}</td>
+                `;
+                historyRows.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

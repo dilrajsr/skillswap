@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Tutor Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card" style="width:100%; max-width:500px; margin:20px auto; padding:32px;" id="tutorInfo">
+            <!-- tutor details go here -->
+        </div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let tutorId = localStorage.getItem("selectedTutorId");
+        let tutor = getUsers().find(u => u.id === tutorId && u.role === "teacher");
+        let tutorInfo = document.getElementById("tutorInfo");
+
+        if (!tutor) {
+            tutorInfo.innerHTML = "<p style='color:#64748b;'>No tutor selected. Please go back to <a href='find-tutor.html' style='color:#2563eb; font-weight:600;'>Find Tutor</a>.</p>";
+        } else {
+            let skillsText = tutor.teachSkills.length > 0 ? tutor.teachSkills.join(", ") : "No skills listed yet";
+            tutorInfo.innerHTML = `
+                <h2>${tutor.name}</h2>
+                <div style="margin-bottom:16px;"><span class="rating">🏆 ${tutor.coins} coins earned teaching</span></div>
+                <p><strong>Can teach:</strong> ${skillsText}</p>
+                <p style="color:#64748b; line-height:1.6;"><strong>About:</strong> ${tutor.bio || "This tutor hasn't written a bio yet."}</p>
+                <button class="btn btn-primary" id="connectBtn" style="width:100%; margin-top:20px; padding:12px;">Get Connected &rarr;</button>
+            `;
+
+            document.getElementById("connectBtn").addEventListener("click", () => {
+                startConnection(tutor);
+            });
+        }
+    </script>
+</body>
+</html>

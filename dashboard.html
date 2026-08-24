@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 id="welcomeText">Welcome!</h1>
+        <p style="color:#64748b; margin-bottom:30px;" id="welcomeSubtext">Here is a quick summary of your SkillSwap account.</p>
+
+        <!-- Teacher dashboard -->
+        <div class="grid" id="teacherDashboard" style="display:none;">
+            <div class="card stat-card">
+                <p>Skills Taught</p>
+                <div class="stat-number" id="teachCount">0</div>
+                <a href="skills.html">Manage Skills &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Sessions Taught</p>
+                <div class="stat-number" id="taughtCount">0</div>
+                <a href="sessions.html">View Sessions &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Coins Balance</p>
+                <div class="stat-number" id="teacherCoinCount">0</div>
+                <a href="coins.html">View Coins &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Reputation Score</p>
+                <div class="stat-number" id="teacherRepCount">0</div>
+                <span style="font-size:13px; color:#94a3b8; font-weight:600;">out of 5.0</span>
+            </div>
+        </div>
+
+        <!-- Learner dashboard -->
+        <div class="grid" id="learnerDashboard" style="display:none;">
+            <div class="card stat-card">
+                <p>Skills Learning</p>
+                <div class="stat-number" id="learnCount">0</div>
+                <a href="skills.html">Manage Skills &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Sessions Attended</p>
+                <div class="stat-number" id="attendedCount">0</div>
+                <a href="sessions.html">View Sessions &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Coins Balance</p>
+                <div class="stat-number" id="learnerCoinCount">0</div>
+                <a href="coins.html">View Coins &rarr;</a>
+            </div>
+            <div class="card stat-card">
+                <p>Reputation Score</p>
+                <div class="stat-number" id="learnerRepCount">0</div>
+                <span style="font-size:13px; color:#94a3b8; font-weight:600;">out of 5.0</span>
+            </div>
+        </div>
+
+        <!-- Admin dashboard: shown only when role is admin -->
+        <div id="adminDashboard" style="display:none;">
+            <div class="grid" style="margin-bottom:40px;">
+                <div class="card stat-card">
+                    <p>Total Registered Users</p>
+                    <div class="stat-number" id="totalUsers">0</div>
+                </div>
+                <div class="card stat-card">
+                    <p>Total Tutors</p>
+                    <div class="stat-number" id="totalTutors">0</div>
+                </div>
+                <div class="card stat-card">
+                    <p>Total Sessions Held</p>
+                    <div class="stat-number" id="totalSessions">0</div>
+                </div>
+            </div>
+
+            <h2 style="text-align:left; font-size:22px; margin-top:20px;">All Platform Users</h2>
+            <table style="margin-bottom:40px;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Coins</th>
+                    </tr>
+                </thead>
+                <tbody id="allUsersRows"></tbody>
+            </table>
+
+            <h2 style="text-align:left; font-size:22px;">All Sessions History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tutor</th>
+                        <th>Learner</th>
+                        <th>Skill</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                    </tr>
+                </thead>
+                <tbody id="allSessionsRows"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        let user = requireLogin();
+        if (!user) throw new Error("Not logged in");
+
+        document.getElementById("welcomeText").textContent = `Welcome back, ${user.name}!`;
+
+        if (user.role === "admin") {
+            // ----- Admin view: overview of the whole platform -----
+            document.getElementById("welcomeSubtext").textContent = "Admin overview of all SkillSwap activity.";
+            document.getElementById("adminDashboard").style.display = "block";
+
+            let allUsers = getUsers();
+            let tutors = getTutors();
+            let connections = getConnections();
+
+            document.getElementById("totalUsers").textContent = allUsers.length;
+            document.getElementById("totalTutors").textContent = tutors.length;
+            document.getElementById("totalSessions").textContent = connections.length;
+
+            let allUsersRows = document.getElementById("allUsersRows");
+            allUsers.forEach((person) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><strong>${person.name}</strong></td>
+                    <td>${person.email}</td>
+                    <td><span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">${person.role}</span></td>
+                    <td><strong>🪙 ${person.coins}</strong></td>
+                `;
+                allUsersRows.appendChild(row);
+            });
+
+            let allSessionsRows = document.getElementById("allSessionsRows");
+            connections.forEach((connection) => {
+                let row = document.createElement("tr");
+                let statusBadge = connection.status === "active" 
+                    ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">Active</span>`
+                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Ended</span>`;
+                row.innerHTML = `
+                    <td>${connection.teacherName}</td>
+                    <td>${connection.learnerName}</td>
+                    <td><strong>${connection.skill}</strong></td>
+                    <td>${statusBadge}</td>
+                    <td>${connection.startedAt}</td>
+                `;
+                allSessionsRows.appendChild(row);
+            });
+
+        } else if (user.role === "teacher") {
+            document.getElementById("teacherDashboard").style.display = "flex";
+
+            document.getElementById("teachCount").textContent = user.teachSkills.length;
+            document.getElementById("teacherCoinCount").textContent = user.coins;
+            document.getElementById("teacherRepCount").textContent = user.reputation;
+
+            let taughtSessions = getConnections().filter(c => c.teacherId === user.id && c.status === "ended");
+            document.getElementById("taughtCount").textContent = taughtSessions.length;
+
+        } else {
+            // learner
+            document.getElementById("learnerDashboard").style.display = "flex";
+
+            document.getElementById("learnCount").textContent = user.learnSkills.length;
+            document.getElementById("learnerCoinCount").textContent = user.coins;
+            document.getElementById("learnerRepCount").textContent = user.reputation;
+
+            let attendedSessions = getConnections().filter(c => c.learnerId === user.id && c.status === "ended");
+            document.getElementById("attendedCount").textContent = attendedSessions.length;
+        }
+    </script>
+</body>
+</html>

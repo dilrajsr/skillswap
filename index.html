@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Peer-to-Peer Learning & Skill Exchange</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Modern 2-Column Hero with High-Quality Imagery -->
+    <div class="hero">
+        <div class="hero-wrapper">
+            <div class="hero-content">
+                <h1>Learn Anything. <br><span class="highlight">Teach Anything.</span></h1>
+                <p>SkillSwap connects passionate learners and mentors across the globe. Share your expertise, earn Skill Coins, and unlock new abilities together in 1-on-1 sessions.</p>
+                <div class="hero-actions">
+                    <a href="register.html" class="btn btn-primary">Get Started Free</a>
+                    <a href="find-tutor.html" class="btn btn-secondary">Find a Tutor</a>
+                </div>
+                <div class="hero-stats-row">
+                    <div class="hero-stat-item">
+                        <strong>5,000+</strong>
+                        <span>Active Learners</span>
+                    </div>
+                    <div class="hero-stat-item">
+                        <strong>1,200+</strong>
+                        <span>Skills Taught</span>
+                    </div>
+                    <div class="hero-stat-item">
+                        <strong>4.9/5</strong>
+                        <span>Community Rating</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-img-container">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Students collaborating and learning together" loading="lazy">
+                </div>
+                <div class="floating-badge floating-badge-top">
+                    <div class="floating-badge-icon">⭐</div>
+                    <div class="floating-badge-text">
+                        <strong>Top Rated Mentors</strong>
+                        <span>Verified peer tutors</span>
+                    </div>
+                </div>
+                <div class="floating-badge floating-badge-bottom">
+                    <div class="floating-badge-icon">🪙</div>
+                    <div class="floating-badge-text">
+                        <strong>Earn While Teaching</strong>
+                        <span>+40 coins per session</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- How it works with visual imagery -->
+        <section>
+            <h2>How SkillSwap Works</h2>
+            <p class="section-subtitle">Start exchanging knowledge in three simple steps — no fees, no subscriptions.</p>
+            
+            <div class="grid" style="justify-content:center;">
+                <div class="card step-card">
+                    <img class="step-card-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Create an account" loading="lazy">
+                    <div class="step-card-body">
+                        <div class="step-number-badge">1</div>
+                        <h3>Create Your Profile</h3>
+                        <p>Sign up in seconds as a Learner or a Teacher. Build a personal profile highlighting your passions and experience.</p>
+                    </div>
+                </div>
+
+                <div class="card step-card">
+                    <img class="step-card-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80" alt="List skills" loading="lazy">
+                    <div class="step-card-body">
+                        <div class="step-number-badge">2</div>
+                        <h3>List Your Skills</h3>
+                        <p>Add skills you want to master and subjects you are ready to teach. Your skills appear instantly in Find Tutor.</p>
+                    </div>
+                </div>
+
+                <div class="card step-card">
+                    <img class="step-card-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=80" alt="Connect with tutor" loading="lazy">
+                    <div class="step-card-body">
+                        <div class="step-number-badge">3</div>
+                        <h3>Connect &amp; Learn</h3>
+                        <p>Find the perfect tutor and click Get Connected to start a live 1-on-1 collaborative session and earn Skill Coins.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Categories Visual Grid -->
+        <section>
+            <h2>Explore Popular Skills</h2>
+            <p class="section-subtitle">Discover topics taught by peer experts in our growing community.</p>
+
+            <div class="category-grid">
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Web Development & Programming" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Programming &amp; Tech</h4>
+                        <p>Python, JavaScript, React, Web Design</p>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=400&q=80" alt="UI/UX & Graphic Design" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Design &amp; Creative</h4>
+                        <p>Figma, Photoshop, Illustration, 3D</p>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=400&q=80" alt="Languages & Linguistics" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Languages &amp; Speech</h4>
+                        <p>Spanish, French, Japanese, ESL</p>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80" alt="Music & Instruments" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Music &amp; Audio</h4>
+                        <p>Guitar, Piano, Vocal Training, Audio Production</p>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=80" alt="Photography & Video" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Photography &amp; Media</h4>
+                        <p>Portrait, Lighting, Video Editing, Lightroom</p>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=80" alt="Business & Marketing" loading="lazy">
+                    <div class="category-card-body">
+                        <h4>Business &amp; Finance</h4>
+                        <p>Marketing, Resume Review, Public Speaking</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Props / Community Banner -->
+        <div class="value-props-banner">
+            <div class="value-prop-item">
+                <div class="value-prop-icon">🤝</div>
+                <div class="value-prop-text">
+                    <h3>100% Peer-to-Peer</h3>
+                    <p>Learn directly from passionate people who love sharing their knowledge.</p>
+                </div>
+            </div>
+            <div class="value-prop-item">
+                <div class="value-prop-icon">🪙</div>
+                <div class="value-prop-text">
+                    <h3>Skill Coin Economy</h3>
+                    <p>Earn 40 coins for every session you teach and 10 coins for every session you attend.</p>
+                </div>
+            </div>
+            <div class="value-prop-item">
+                <div class="value-prop-icon">⚡</div>
+                <div class="value-prop-text">
+                    <h3>Live Interactive Sessions</h3>
+                    <p>Connect instantly in one click and track your session history in real-time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Tutors Grid Section (Dynamically Loaded by JS) -->
+        <section>
+            <h2>Featured Tutors</h2>
+            <p class="section-subtitle">Learn from top-ranked mentors in our peer-to-peer ecosystem.</p>
+            <div class="grid" id="featuredTutors" style="justify-content:center;"></div>
+        </section>
+
+        <!-- Tip of the Day Section (Loaded by JS) -->
+        <section>
+            <h2>Daily Inspiration</h2>
+            <p class="section-subtitle">A little wisdom to power your learning journey today.</p>
+            <div class="card" id="tipCard" style="margin:0 auto; width:100%; max-width:600px;">
+                <p id="tipText">Loading tip...</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Preserved EXACT JavaScript Logic Below -->
+    <script src="script.js"></script>
+    <script>
+        // Show the top 3 tutors (by coins earned teaching) on the home page
+        let featuredContainer = document.getElementById("featuredTutors");
+        let topTutors = getTutors().sort((a, b) => b.coins - a.coins).slice(0, 3);
+
+        if (topTutors.length === 0) {
+            featuredContainer.innerHTML = `<p style="color:#777;">No tutors yet. <a href="register.html" style="color:#2fb6c7;">Sign up</a> and be the first to teach a skill!</p>`;
+        } else {
+            topTutors.forEach((tutor) => {
+                let card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <h3>${tutor.name}</h3>
+                    <p>Teaches: ${tutor.teachSkills.join(", ")}</p>
+                    <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
+                `;
+                featuredContainer.appendChild(card);
+            });
+        }
+
+        // Fetch a random quote as a simple "Tip of the Day" using async/await
+        async function loadTip() {
+            let tipText = document.getElementById("tipText");
+            try {
+                let response = await fetch("https://dummyjson.com/quotes/random");
+                let data = await response.json();
+                tipText.textContent = `"${data.quote}" - ${data.author}`;
+            } catch (error) {
+                tipText.textContent = "Could not load tip right now. Try again later.";
+            }
+        }
+
+        loadTip();
+    </script>
+</body>
+</html>
