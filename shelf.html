@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Disciplines &amp; Learning Tracks</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .track-hero {
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .track-filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .filter-pill {
+      padding: 7px 15px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .filter-pill:hover {
+      color: var(--text);
+      border-color: var(--rule);
+      background-color: var(--surface-raised);
+    }
+
+    .filter-pill.active {
+      color: var(--primary);
+      background-color: rgba(56, 189, 248, 0.12);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    .discipline-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .discipline-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mentor-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background-color: var(--ground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+    }
+
+    .pairing-box {
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="main-content">
+
+    <!-- Page Hero Banner -->
+    <header class="track-hero">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div style="max-width: 700px;">
+          <div class="badge badge-mutual" style="margin-bottom: 12px;">
+            ⇄ Reciprocal Curriculum &amp; Peer Tracks
+          </div>
+          <h1 style="font-size: 34px; font-weight: 800; line-height: 1.2; letter-spacing: -0.025em; margin-bottom: 12px;">
+            Disciplines &amp; Learning Tracks
+          </h1>
+          <p style="font-size: 15.5px; color: var(--text-muted); line-height: 1.6; margin: 0;">
+            Explore verified knowledge exchange tracks. Browse active community mentors, understand reciprocal pairing workflows, and discover skills you can learn by trading what you already know.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center; align-self: flex-end;">
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Edit My Skills Matrix &rarr;
+          </a>
+          <a href="find-tutor.html" class="btn btn-primary btn-sm">
+            Explore All Mentors &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Stats Banner -->
+      <div style="display: flex; gap: 32px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--rule); flex-wrap: wrap;">
+        <div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--accent-light);" class="tabular-nums">7 Tracks</div>
+          <div style="font-size: 12px; color: var(--text-faint);">Structured Disciplines</div>
+        </div>
+        <div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--text);" class="tabular-nums">50+ Skills</div>
+          <div style="font-size: 12px; color: var(--text-faint);">Peer-Taught Catalog</div>
+        </div>
+        <div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--text);" class="tabular-nums">100% Reciprocal</div>
+          <div style="font-size: 12px; color: var(--text-faint);">Mutual Skill Matches</div>
+        </div>
+        <div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--accent);" class="tabular-nums">+40 Coins</div>
+          <div style="font-size: 12px; color: var(--text-faint);">Earned Per Verified Session</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search & Filter Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+      <div class="track-filter-bar" id="categoryFilterBar" style="margin-bottom: 0;">
+        <button class="filter-pill active" data-category="all">All Tracks (7)</button>
+        <button class="filter-pill" data-category="Software">Software &amp; Backend</button>
+        <button class="filter-pill" data-category="Design">Product &amp; UI Design</button>
+        <button class="filter-pill" data-category="AI">AI &amp; Machine Learning</button>
+        <button class="filter-pill" data-category="Languages">Languages</button>
+        <button class="filter-pill" data-category="Music">Audio &amp; Music</button>
+        <button class="filter-pill" data-category="Strategy">Business &amp; Strategy</button>
+      </div>
+
+      <div style="min-width: 260px;">
+        <input 
+          type="text" 
+          id="trackSearchInput" 
+          placeholder="Filter disciplines or skills..." 
+          style="width: 100%; padding: 8px 14px; font-size: 13.5px;"
+        >
+      </div>
+    </div>
+
+    <!-- Disciplines Grid Container -->
+    <section class="grid-2" id="disciplinesGrid" style="gap: 24px; margin-bottom: 50px;">
+      <!-- Track 1: Software Systems -->
+      <article class="card discipline-card" data-category="Software">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">⚡</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Software Systems &amp; Architecture</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Distributed Backends · Concurrency · Databases</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">14 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Focused on deterministic backend architecture, explicit state machines, relational schema design, and asynchronous event loops.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">Python (FastAPI / Django)</span>
+              <span class="skill-tag">Node.js &amp; Express</span>
+              <span class="skill-tag">PostgreSQL Relational Design</span>
+              <span class="skill-tag">Docker Containerization</span>
+              <span class="skill-tag">Go Microservices</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #388bfd;">AC</div>
+                <span>Alex Chen &middot; <strong>5.0 ★</strong> (12 swaps)</span>
+              </div>
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #6366f1;">DK</div>
+                <span>David Kim &middot; <strong>4.9 ★</strong> (9 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=Software" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find Software Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm" title="Add this discipline to your offered or wanted matrix">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+
+      <!-- Track 2: Product & Design Systems -->
+      <article class="card discipline-card" data-category="Design">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">🎨</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Product &amp; Design Systems</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Anti-Slop Craft · Tokens · Typography · Motion</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">9 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Disciplined product aesthetics: typographic rhythm, functional color palettes, component libraries, and tactile micro-interactions.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">Figma Component Architecture</span>
+              <span class="skill-tag">Design Tokens &amp; Dark Mode</span>
+              <span class="skill-tag">Typography &amp; Layout Hierarchy</span>
+              <span class="skill-tag">Micro-Interactions</span>
+              <span class="skill-tag">Design Critiques</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #ec4899;">SJ</div>
+                <span>Sarah Jenkins &middot; <strong>5.0 ★</strong> (15 swaps)</span>
+              </div>
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #a855f7;">ML</div>
+                <span>Maya Lin &middot; <strong>4.8 ★</strong> (7 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=Design" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find Design Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+
+      <!-- Track 3: Contextual AI & Machine Learning -->
+      <article class="card discipline-card" data-category="AI">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">🧠</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Contextual AI &amp; Machine Learning</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Reasoning Rigs · Vectors · Agents · PyTorch</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">8 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Modern AI workflows: context engineering, RAG pipelines, neural embeddings, structured prompt protocols, and model evaluation.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">PyTorch Fundamentals</span>
+              <span class="skill-tag">LLM Retrieval &amp; Vector DBs</span>
+              <span class="skill-tag">LangChain &amp; Multi-Agent Swarms</span>
+              <span class="skill-tag">Fine-Tuning &amp; LoRA</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #06b6d4;">RN</div>
+                <span>Rohan Nair &middot; <strong>5.0 ★</strong> (11 swaps)</span>
+              </div>
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #3b82f6;">VT</div>
+                <span>Victor Thorne &middot; <strong>4.9 ★</strong> (8 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=AI" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find AI Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+
+      <!-- Track 4: Languages & World Linguistics -->
+      <article class="card discipline-card" data-category="Languages">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">🌐</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Languages &amp; World Linguistics</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Conversational Immersion · Pronunciation · Native Dialogue</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">11 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Authentic language exchange with native speakers. Real-time conversation practice, colloquial nuances, and professional business dialogue.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">Conversational Spanish (B2/C1)</span>
+              <span class="skill-tag">Japanese (JLPT N3-N1)</span>
+              <span class="skill-tag">German (Technical &amp; Daily)</span>
+              <span class="skill-tag">French Immersion</span>
+              <span class="skill-tag">Business English</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #f59e0b;">CP</div>
+                <span>Carlos Perez &middot; <strong>5.0 ★</strong> (18 swaps)</span>
+              </div>
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #10b981;">YT</div>
+                <span>Yuki Tanaka &middot; <strong>4.9 ★</strong> (14 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=Languages" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find Language Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+
+      <!-- Track 5: Acoustic & Music Production -->
+      <article class="card discipline-card" data-category="Music">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">🎸</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Acoustic Guitar &amp; Music Production</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Voicings · Fingerstyle · Studio DAW · Mixing</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">6 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Acoustic guitar fundamentals, chord inversions, rhythm timing, digital audio workstations, synthesis, and acoustic recording techniques.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">Acoustic Guitar (Fingerstyle &amp; Chords)</span>
+              <span class="skill-tag">Logic Pro X / Ableton Live</span>
+              <span class="skill-tag">Applied Music Theory</span>
+              <span class="skill-tag">Vocal Recording &amp; Mixing</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #2ea043;">ER</div>
+                <span>Elena Rostova &middot; <strong>5.0 ★</strong> (16 swaps)</span>
+              </div>
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #8b5cf6;">LA</div>
+                <span>Liam Archer &middot; <strong>4.8 ★</strong> (6 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=Music" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find Music Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+
+      <!-- Track 6: Venture Strategy & Economics -->
+      <article class="card discipline-card" data-category="Strategy">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 28px;">📈</span>
+              <div>
+                <h2 style="font-size: 19px; font-weight: 700; margin: 0;">Product Strategy &amp; Economics</h2>
+                <span style="font-size: 12px; color: var(--text-faint);">Unit Economics · Tokenomics · Growth · 0-to-1</span>
+              </div>
+            </div>
+            <span class="badge badge-accent">7 Mentors</span>
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px;">
+            Practical venture building: user acquisition mechanics, product roadmap prioritization, token economy modeling, and fundraising readiness.
+          </p>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Active Curriculum Skills
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="skill-tag highlight">Product Management &amp; PRDs</span>
+              <span class="skill-tag">Unit Economics &amp; CAC/LTV</span>
+              <span class="skill-tag">Peer Tokenomics</span>
+              <span class="skill-tag">Growth Loop Design</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 600;">
+              Featured Peer Mentors
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mentor-chip">
+                <div class="user-avatar" style="width: 22px; height: 22px; font-size: 10px; background-color: #14b8a6;">JW</div>
+                <span>Jason Wu &middot; <strong>4.9 ★</strong> (10 swaps)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <a href="find-tutor.html?discipline=Strategy" class="btn btn-primary btn-sm" style="flex: 1; text-align: center;">
+            Find Strategy Mentors &rarr;
+          </a>
+          <a href="skills.html" class="btn btn-secondary btn-sm">
+            Add to My Matrix +
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Reciprocal Pairing Workflows Section -->
+    <section style="margin-bottom: 50px;">
+      <div style="margin-bottom: 20px;">
+        <div class="badge badge-mutual" style="margin-bottom: 8px;">
+          Deterministic Reciprocity
+        </div>
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0;">How Reciprocal Tracks Pair Up</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin: 4px 0 0;">
+          Our engine pairs members when both people's needs match mutually. Zero cash required.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="pairing-box">
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent-light); text-transform: uppercase; letter-spacing: 0.05em;">
+            Engineering ⇄ Music
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span class="skill-tag highlight">Python Backend</span>
+            <span style="color: var(--accent); font-weight: 700;">⇄</span>
+            <span class="skill-tag highlight">Acoustic Guitar</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Alex teaches Python concurrency; Elena teaches fingerstyle guitar voicings. Both earn 40 coins.
+          </p>
+        </div>
+
+        <div class="pairing-box">
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent-light); text-transform: uppercase; letter-spacing: 0.05em;">
+            Design ⇄ Languages
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span class="skill-tag highlight">Figma Tokens</span>
+            <span style="color: var(--accent); font-weight: 700;">⇄</span>
+            <span class="skill-tag highlight">Conversational Spanish</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Sarah teaches design systems in Figma; Carlos hosts live conversational Spanish immersion.
+          </p>
+        </div>
+
+        <div class="pairing-box">
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent-light); text-transform: uppercase; letter-spacing: 0.05em;">
+            AI ⇄ Frontend Systems
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span class="skill-tag highlight">PyTorch &amp; LLMs</span>
+            <span style="color: var(--accent); font-weight: 700;">⇄</span>
+            <span class="skill-tag highlight">Responsive Web CSS</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Rohan demonstrates vector embeddings; Alex guides CSS architecture &amp; responsive layout.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderNavbar();
+
+      const searchInput = document.getElementById("trackSearchInput");
+      const filterPills = document.querySelectorAll(".filter-pill");
+      const cards = document.querySelectorAll(".discipline-card");
+
+      let currentCategory = "all";
+      let currentQuery = "";
+
+      function filterTracks() {
+        cards.forEach(card => {
+          const category = card.dataset.category;
+          const text = card.textContent.toLowerCase();
+
+          const matchesCat = (currentCategory === "all" || category === currentCategory);
+          const matchesQuery = (!currentQuery || text.includes(currentQuery));
+
+          if (matchesCat && matchesQuery) {
+            card.style.display = "flex";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      filterPills.forEach(pill => {
+        pill.addEventListener("click", () => {
+          filterPills.forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          currentCategory = pill.dataset.category;
+          filterTracks();
+        });
+      });
+
+      searchInput?.addEventListener("input", (e) => {
+        currentQuery = e.target.value.toLowerCase().trim();
+        filterTracks();
+      });
+    });
+  </script>
+</body>
+</html>

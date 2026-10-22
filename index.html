@@ -1,281 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Peer-to-Peer Learning & Skill Exchange</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap — Reciprocal Knowledge Barter</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ==========================================================================
+       Index Specific Editorial & Kinetic Styles
+       ========================================================================== */
+    .hero-stage {
+      position: relative;
+      padding: 64px 0 72px;
+      margin-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero-canvas-wrapper {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      z-index: 1;
+      opacity: 0.65;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+      pointer-events: none; /* Let canvas receive interaction except on interactive elements */
+    }
+
+    .hero-content a,
+    .hero-content button,
+    .hero-content .barter-studio {
+      pointer-events: auto;
+    }
+
+    .hero-lead-title {
+      font-size: clamp(40px, 4.6vw, 62px);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    .hero-lead-title em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent-give);
+    }
+
+    .hero-lead-title .highlight-seek {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent-seek);
+    }
+
+    .hero-deck {
+      font-size: 16.5px;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.65;
+      margin-bottom: 32px;
+    }
+
+    /* Interactive Barter Playground */
+    .barter-studio {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .barter-studio::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-give) 0%, var(--accent-mutual) 50%, var(--accent-seek) 100%);
+    }
+
+    .barter-pole {
+      background-color: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .barter-pole.give-side {
+      border-left: 3px solid var(--accent-give);
+    }
+
+    .barter-pole.seek-side {
+      border-right: 3px solid var(--accent-seek);
+    }
+
+    .interactive-chip {
+      padding: 7px 13px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .interactive-chip:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .interactive-chip.active-give {
+      background-color: var(--accent-give-subtle);
+      border-color: var(--accent-give);
+      color: var(--accent-give);
+      box-shadow: 0 0 14px rgba(224, 122, 95, 0.25);
+    }
+
+    .interactive-chip.active-seek {
+      background-color: var(--accent-seek-subtle);
+      border-color: var(--accent-seek);
+      color: var(--accent-seek);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Live Barter Stream / Ticker */
+    .barter-stream-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      transition: transform var(--duration-fast) ease, border-color var(--duration-fast) ease;
+    }
+
+    .barter-stream-card:hover {
+      transform: translateX(4px);
+      border-color: var(--border-hover);
+    }
+
+    @media (max-width: 960px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .hero-stage {
+        padding: 40px 0 52px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+  <main class="main-content">
 
-    <!-- Modern 2-Column Hero with High-Quality Imagery -->
-    <div class="hero">
-        <div class="hero-wrapper">
-            <div class="hero-content">
-                <h1>Learn Anything. <br><span class="highlight">Teach Anything.</span></h1>
-                <p>SkillSwap connects passionate learners and mentors across the globe. Share your expertise, earn Skill Coins, and unlock new abilities together in 1-on-1 sessions.</p>
-                <div class="hero-actions">
-                    <a href="register.html" class="btn btn-primary">Get Started Free</a>
-                    <a href="find-tutor.html" class="btn btn-secondary">Find a Tutor</a>
-                </div>
-                <div class="hero-stats-row">
-                    <div class="hero-stat-item">
-                        <strong>5,000+</strong>
-                        <span>Active Learners</span>
-                    </div>
-                    <div class="hero-stat-item">
-                        <strong>1,200+</strong>
-                        <span>Skills Taught</span>
-                    </div>
-                    <div class="hero-stat-item">
-                        <strong>4.9/5</strong>
-                        <span>Community Rating</span>
-                    </div>
-                </div>
+    <!-- 1. Editorial Hero Section with Interactive Constellation Canvas -->
+    <section class="hero-stage">
+      <div class="hero-canvas-wrapper" title="Interactive Barter Constellation: Hover to attract and link mutual skills">
+        <canvas id="barterCanvas"></canvas>
+      </div>
+
+      <div class="hero-content">
+        <div>
+          <h1 class="hero-lead-title">
+            Skills aren't products to buy.<br>
+            They are craft <em>passed between</em> <span class="highlight-seek">people</span>.
+          </h1>
+
+          <p class="hero-deck">
+            An equal-contribution peer barter economy. Trade Python systems design for classical guitar, or product typography for conversational Spanish. Zero subscription fees, zero course paywalls—measured in direct mutual reciprocity.
+          </p>
+
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 36px;">
+            <a href="find-tutor.html" class="btn btn-primary btn-lg">
+              Explore Mutual Matches &rarr;
+            </a>
+            <a href="shelf.html" class="btn btn-secondary btn-lg">
+              Browse Disciplines
+            </a>
+          </div>
+
+          <!-- Dynamic Metric Anchors -->
+          <div style="display: flex; gap: 36px; padding-top: 24px; border-top: 1px solid var(--rule); flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 28px; font-weight: 800; color: var(--accent-mutual); font-family: var(--font-mono);" class="tabular-nums" data-countup="100" data-suffix="%">
+                100%
+              </div>
+              <div style="font-size: 12px; color: var(--text-faint); margin-top: 2px;">Bilateral Reciprocity Math</div>
             </div>
-            <div class="hero-visual">
-                <div class="hero-img-container">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Students collaborating and learning together" loading="lazy">
-                </div>
-                <div class="floating-badge floating-badge-top">
-                    <div class="floating-badge-icon">⭐</div>
-                    <div class="floating-badge-text">
-                        <strong>Top Rated Mentors</strong>
-                        <span>Verified peer tutors</span>
-                    </div>
-                </div>
-                <div class="floating-badge floating-badge-bottom">
-                    <div class="floating-badge-icon">🪙</div>
-                    <div class="floating-badge-text">
-                        <strong>Earn While Teaching</strong>
-                        <span>+40 coins per session</span>
-                    </div>
-                </div>
+            <div>
+              <div style="font-size: 28px; font-weight: 800; color: var(--coin-gold); font-family: var(--font-mono);" class="tabular-nums" data-countup="40" data-prefix="+" data-suffix=" Coins">
+                +40 Coins
+              </div>
+              <div style="font-size: 12px; color: var(--text-faint); margin-top: 2px;">Earned Per Verified Session</div>
             </div>
+            <div>
+              <div style="font-size: 28px; font-weight: 800; color: var(--text); font-family: var(--font-mono);" class="tabular-nums" data-countup="0" data-prefix="$" data-suffix=" Fees">
+                $0 Fees
+              </div>
+              <div style="font-size: 12px; color: var(--text-faint); margin-top: 2px;">Pure Peer Knowledge Barter</div>
+            </div>
+          </div>
         </div>
+
+        <!-- 2. Signature Barter Playground (Interactive Widget) -->
+        <div class="barter-studio interactive-surface" id="studio">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;">
+              Interactive Barter Studio
+            </div>
+            <span class="badge badge-mutual" id="barterStudioScore">96% Mutual Reciprocity</span>
+          </div>
+
+          <!-- Give Side -->
+          <div class="barter-pole give-side" style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-give); text-transform: uppercase; letter-spacing: 0.06em;">
+                What You Share (Offer)
+              </span>
+              <span style="font-size: 11.5px; color: var(--text-faint);">Alex Chen</span>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="giveChipList">
+              <button type="button" class="interactive-chip active-give" data-skill="Python">Python Backend</button>
+              <button type="button" class="interactive-chip" data-skill="Docker">Docker &amp; K8s</button>
+              <button type="button" class="interactive-chip" data-skill="PostgreSQL">PostgreSQL</button>
+            </div>
+          </div>
+
+          <!-- Kinetic Connecting Flow Bridge -->
+          <div class="barter-bridge">
+            <div class="barter-flow-line">
+              <div class="barter-flow-knot" id="knotGlyph" title="Reciprocal Barter Flow">⇄</div>
+            </div>
+          </div>
+
+          <!-- Seek Side -->
+          <div class="barter-pole seek-side" style="margin-top: 12px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-seek); text-transform: uppercase; letter-spacing: 0.06em;">
+                What You Receive (Seek)
+              </span>
+              <span style="font-size: 11.5px; color: var(--accent-mutual);" id="partnerNameLabel">Elena Rostova</span>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="seekChipList">
+              <button type="button" class="interactive-chip active-seek" data-skill="Acoustic Guitar" data-partner="Elena Rostova">Acoustic Guitar</button>
+              <button type="button" class="interactive-chip" data-skill="Figma" data-partner="Sarah Jenkins">Figma UI</button>
+              <button type="button" class="interactive-chip" data-skill="Spanish" data-partner="Carlos Perez">Conversational Spanish</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Matching Result Statement -->
+          <div style="background-color: var(--surface-sunken); border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 14px; margin-bottom: 18px;">
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;" id="barterRationaleText">
+              You teach <strong>Python Backend</strong> to Elena Rostova; Elena teaches <strong>Acoustic Guitar</strong> to you. 60-min reciprocal session awards <strong>+40 Skill Coins</strong> to both members.
+            </p>
+          </div>
+
+          <a href="find-tutor.html" class="btn btn-primary" style="width: 100%; text-align: center;" id="barterStudioActionBtn">
+            Propose This Barter Handshake &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Substantive 2-Column Editorial: Manifesto vs. Protocol -->
+    <section style="margin-bottom: 72px;">
+      <div class="grid-2" style="gap: 40px; align-items: start;">
+        <!-- Left Column: The Human Case for Barter -->
+        <div style="padding-right: 16px;">
+          <h2 style="font-family: var(--font-serif); font-size: 32px; font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 18px;">
+            Why direct exchange beats <em>one-way courses</em>
+          </h2>
+          <p style="color: var(--text-muted); font-size: 15px; line-height: 1.7; margin-bottom: 18px;">
+            Commercial platforms reduce education to transactions. You pay a fee, watch pre-recorded lectures in isolation, and rarely receive human critique. Retention rates hover below ten percent.
+          </p>
+          <p style="color: var(--text-muted); font-size: 15px; line-height: 1.7; margin-bottom: 24px;">
+            On SkillSwap, everyone contributes. When you teach a subject you have mastered, you clarify your own mental models. When your partner guides you through their craft, you build reciprocal trust, shared context, and mutual accountability.
+          </p>
+          <div style="display: flex; gap: 14px;">
+            <a href="find-tutor.html" class="btn btn-secondary">
+              Find Your Counterpart &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: The Architectural Guarantees -->
+        <div class="card" style="padding: 28px; background-color: var(--surface-raised);">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 18px; color: var(--text);">
+            Deterministic Bilateral Architecture
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <strong style="font-size: 14px; color: var(--text);">Bidirectional Set Intersection</strong>
+                <span style="font-size: 11px; color: var(--accent-mutual); font-family: var(--font-mono);">O(1) MATCHER</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                Matches are determined mathematically: <code>(A.offers &cap; B.wants) &and; (B.offers &cap; A.wants)</code>. Zero algorithmic favoritism.
+              </p>
+            </div>
+
+            <div style="border-top: 1px solid var(--rule); padding-top: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <strong style="font-size: 14px; color: var(--text);">Guarded State Machine Pipeline</strong>
+                <span style="font-size: 11px; color: var(--accent-seek); font-family: var(--font-mono);">FSM PROTECTED</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                Exchanges follow a verified progression: <code>PROPOSED &rarr; ACCEPTED &rarr; COMPLETED</code> with cryptographic idempotency keys to reject duplicate submissions.
+              </p>
+            </div>
+
+            <div style="border-top: 1px solid var(--rule); padding-top: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <strong style="font-size: 14px; color: var(--text);">Zero-Cash Time Economy</strong>
+                <span style="font-size: 11px; color: var(--coin-gold); font-family: var(--font-mono);">+40 REWARD</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                Skill Coins cannot be purchased with fiat money. They are generated only when two peers complete and confirm an active 1-on-1 collaborative session.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Community Practitioner Showcase -->
+    <section style="margin-bottom: 72px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-size: 24px; font-weight: 700; margin: 0;">Active Barter Practitioners</h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin: 4px 0 0;">
+            Real community members ready for bilateral knowledge exchange.
+          </p>
+        </div>
+        <a href="find-tutor.html" class="btn btn-secondary btn-sm">
+          View All Members &rarr;
+        </a>
+      </div>
+
+      <div class="grid-3">
+        <!-- Practitioner 1: Elena Rostova -->
+        <div class="card interactive-surface" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+              <div class="user-avatar" style="width: 44px; height: 44px; font-size: 15px; background: #2ea043;">
+                ER
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Elena Rostova</h3>
+                <div style="font-size: 12px; color: var(--text-faint);">
+                  Classical Guitar &bull; <strong style="color: var(--coin-gold);">5.0 ★</strong> (5 swaps)
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+              "Teaching fingerpicking, music theory, and conversational Spanish. Looking to learn Python and data science."
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+              <div style="font-size: 11px; color: var(--accent-give); font-weight: 600;">Teaches: Acoustic Guitar, Spanish</div>
+              <div style="font-size: 11px; color: var(--accent-seek); font-weight: 600;">Wants: Python, Data Analysis</div>
+            </div>
+          </div>
+          <a href="find-tutor.html?skill=Guitar" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;">
+            Propose Swap &rarr;
+          </a>
+        </div>
+
+        <!-- Practitioner 2: Marcus Vance -->
+        <div class="card interactive-surface" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+              <div class="user-avatar" style="width: 44px; height: 44px; font-size: 15px; background: #d29922;">
+                MV
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Marcus Vance</h3>
+                <div style="font-size: 12px; color: var(--text-faint);">
+                  Product Designer &bull; <strong style="color: var(--coin-gold);">4.8 ★</strong> (2 swaps)
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+              "Design systems lead. Can guide you through Figma tokens, usability research, and portfolio design."
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+              <div style="font-size: 11px; color: var(--accent-give); font-weight: 600;">Teaches: Figma, Design Systems</div>
+              <div style="font-size: 11px; color: var(--accent-seek); font-weight: 600;">Wants: React, Frontend Architecture</div>
+            </div>
+          </div>
+          <a href="find-tutor.html?skill=Figma" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;">
+            Propose Swap &rarr;
+          </a>
+        </div>
+
+        <!-- Practitioner 3: Priya Patel -->
+        <div class="card interactive-surface" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+              <div class="user-avatar" style="width: 44px; height: 44px; font-size: 15px; background: #a371f7;">
+                PP
+              </div>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Priya Patel</h3>
+                <div style="font-size: 12px; color: var(--text-faint);">
+                  Data Specialist &bull; <strong style="color: var(--coin-gold);">4.9 ★</strong> (3 swaps)
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+              "Senior analyst offering SQL modeling and data visualization in exchange for executive public speaking coaching."
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+              <div style="font-size: 11px; color: var(--accent-give); font-weight: 600;">Teaches: SQL, Data Analysis</div>
+              <div style="font-size: 11px; color: var(--accent-seek); font-weight: 600;">Wants: Public Speaking</div>
+            </div>
+          </div>
+          <a href="find-tutor.html?skill=SQL" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;">
+            Propose Swap &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Real-Time Community Exchange Stream -->
+    <section style="margin-bottom: 60px;">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px; font-weight: 700; margin: 0;">Recent Reciprocal Swaps Completed</h2>
+        <p style="color: var(--text-muted); font-size: 13.5px; margin: 4px 0 0;">
+          Verified sessions with bilateral coin distributions recorded to the ledger.
+        </p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="barter-stream-card">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 16px; color: var(--accent-mutual);">✓</span>
+            <div>
+              <span style="font-weight: 600;">Alex Chen</span> taught 
+              <span class="skill-tag give" style="font-size: 11px;">Python Backend</span> ⇄ 
+              <span style="font-weight: 600;">Elena Rostova</span> taught 
+              <span class="skill-tag seek" style="font-size: 11px;">Acoustic Guitar</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="badge badge-coin">+40 Coins Each</span>
+            <span style="font-size: 12px; color: var(--text-faint); font-family: var(--font-mono);">2 hrs ago</span>
+          </div>
+        </div>
+
+        <div class="barter-stream-card">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 16px; color: var(--accent-mutual);">✓</span>
+            <div>
+              <span style="font-weight: 600;">Marcus Vance</span> taught 
+              <span class="skill-tag give" style="font-size: 11px;">Figma Tokens</span> ⇄ 
+              <span style="font-weight: 600;">Carlos Perez</span> taught 
+              <span class="skill-tag seek" style="font-size: 11px;">Conversational Spanish</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="badge badge-coin">+40 Coins Each</span>
+            <span style="font-size: 12px; color: var(--text-faint); font-family: var(--font-mono);">5 hrs ago</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-weight: 700; color: var(--text);">SkillSwap</span> &mdash;
+        <span>Peer-to-Peer Reciprocal Knowledge Barter</span>
+      </div>
+      <div class="footer-nav">
+        <a href="index.html">Overview</a>
+        <a href="find-tutor.html">Matches</a>
+        <a href="shelf.html">Disciplines</a>
+        <a href="sessions.html">Sessions</a>
+        <a href="coins.html">Ledger</a>
+      </div>
     </div>
+  </footer>
 
-    <div class="container">
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="barter-constellation.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Initialize Kinetic Constellation Canvas
+      window.initBarterConstellation('barterCanvas');
 
-        <!-- How it works with visual imagery -->
-        <section>
-            <h2>How SkillSwap Works</h2>
-            <p class="section-subtitle">Start exchanging knowledge in three simple steps — no fees, no subscriptions.</p>
-            
-            <div class="grid" style="justify-content:center;">
-                <div class="card step-card">
-                    <img class="step-card-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Create an account" loading="lazy">
-                    <div class="step-card-body">
-                        <div class="step-number-badge">1</div>
-                        <h3>Create Your Profile</h3>
-                        <p>Sign up in seconds as a Learner or a Teacher. Build a personal profile highlighting your passions and experience.</p>
-                    </div>
-                </div>
+      // 2. Interactive Barter Studio Logic
+      const giveChips = document.querySelectorAll("#giveChipList .interactive-chip");
+      const seekChips = document.querySelectorAll("#seekChipList .interactive-chip");
+      const partnerLabel = document.getElementById("partnerNameLabel");
+      const rationaleText = document.getElementById("barterRationaleText");
+      const actionBtn = document.getElementById("barterStudioActionBtn");
 
-                <div class="card step-card">
-                    <img class="step-card-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80" alt="List skills" loading="lazy">
-                    <div class="step-card-body">
-                        <div class="step-number-badge">2</div>
-                        <h3>List Your Skills</h3>
-                        <p>Add skills you want to master and subjects you are ready to teach. Your skills appear instantly in Find Tutor.</p>
-                    </div>
-                </div>
+      let currentGiveSkill = "Python";
+      let currentSeekSkill = "Acoustic Guitar";
+      let currentPartner = "Elena Rostova";
 
-                <div class="card step-card">
-                    <img class="step-card-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=80" alt="Connect with tutor" loading="lazy">
-                    <div class="step-card-body">
-                        <div class="step-number-badge">3</div>
-                        <h3>Connect &amp; Learn</h3>
-                        <p>Find the perfect tutor and click Get Connected to start a live 1-on-1 collaborative session and earn Skill Coins.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+      function updateBarterStudio() {
+        rationaleText.innerHTML = `You teach <strong>${currentGiveSkill}</strong> to ${currentPartner}; ${currentPartner} teaches <strong>${currentSeekSkill}</strong> to you. 60-min reciprocal session awards <strong>+40 Skill Coins</strong> to both members.`;
+        partnerLabel.textContent = currentPartner;
+        actionBtn.href = `find-tutor.html?skill=${encodeURIComponent(currentSeekSkill)}`;
+        
+        // Micro-animation on the central knot
+        const knot = document.getElementById("knotGlyph");
+        if (knot) {
+          knot.style.transform = "scale(1.2) rotate(180deg)";
+          setTimeout(() => {
+            knot.style.transform = "scale(1) rotate(0deg)";
+          }, 300);
+        }
+      }
 
-        <!-- Popular Categories Visual Grid -->
-        <section>
-            <h2>Explore Popular Skills</h2>
-            <p class="section-subtitle">Discover topics taught by peer experts in our growing community.</p>
+      giveChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+          giveChips.forEach(c => c.classList.remove("active-give"));
+          chip.classList.add("active-give");
+          currentGiveSkill = chip.dataset.skill;
+          updateBarterStudio();
+        });
+      });
 
-            <div class="category-grid">
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Web Development & Programming" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Programming &amp; Tech</h4>
-                        <p>Python, JavaScript, React, Web Design</p>
-                    </div>
-                </div>
+      seekChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+          seekChips.forEach(c => c.classList.remove("active-seek"));
+          chip.classList.add("active-seek");
+          currentSeekSkill = chip.dataset.skill;
+          currentPartner = chip.dataset.partner;
+          updateBarterStudio();
+        });
+      });
 
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=400&q=80" alt="UI/UX & Graphic Design" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Design &amp; Creative</h4>
-                        <p>Figma, Photoshop, Illustration, 3D</p>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=400&q=80" alt="Languages & Linguistics" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Languages &amp; Speech</h4>
-                        <p>Spanish, French, Japanese, ESL</p>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80" alt="Music & Instruments" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Music &amp; Audio</h4>
-                        <p>Guitar, Piano, Vocal Training, Audio Production</p>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=80" alt="Photography & Video" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Photography &amp; Media</h4>
-                        <p>Portrait, Lighting, Video Editing, Lightroom</p>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=80" alt="Business & Marketing" loading="lazy">
-                    <div class="category-card-body">
-                        <h4>Business &amp; Finance</h4>
-                        <p>Marketing, Resume Review, Public Speaking</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Value Props / Community Banner -->
-        <div class="value-props-banner">
-            <div class="value-prop-item">
-                <div class="value-prop-icon">🤝</div>
-                <div class="value-prop-text">
-                    <h3>100% Peer-to-Peer</h3>
-                    <p>Learn directly from passionate people who love sharing their knowledge.</p>
-                </div>
-            </div>
-            <div class="value-prop-item">
-                <div class="value-prop-icon">🪙</div>
-                <div class="value-prop-text">
-                    <h3>Skill Coin Economy</h3>
-                    <p>Earn 40 coins for every session you teach and 10 coins for every session you attend.</p>
-                </div>
-            </div>
-            <div class="value-prop-item">
-                <div class="value-prop-icon">⚡</div>
-                <div class="value-prop-text">
-                    <h3>Live Interactive Sessions</h3>
-                    <p>Connect instantly in one click and track your session history in real-time.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Featured Tutors Grid Section (Dynamically Loaded by JS) -->
-        <section>
-            <h2>Featured Tutors</h2>
-            <p class="section-subtitle">Learn from top-ranked mentors in our peer-to-peer ecosystem.</p>
-            <div class="grid" id="featuredTutors" style="justify-content:center;"></div>
-        </section>
-
-        <!-- Tip of the Day Section (Loaded by JS) -->
-        <section>
-            <h2>Daily Inspiration</h2>
-            <p class="section-subtitle">A little wisdom to power your learning journey today.</p>
-            <div class="card" id="tipCard" style="margin:0 auto; width:100%; max-width:600px;">
-                <p id="tipText">Loading tip...</p>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
-        </div>
-    </footer>
-
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        // Show the top 3 tutors (by coins earned teaching) on the home page
-        let featuredContainer = document.getElementById("featuredTutors");
-        let topTutors = getTutors().sort((a, b) => b.coins - a.coins).slice(0, 3);
-
-        if (topTutors.length === 0) {
-            featuredContainer.innerHTML = `<p style="color:#777;">No tutors yet. <a href="register.html" style="color:#2fb6c7;">Sign up</a> and be the first to teach a skill!</p>`;
+      // Synchronize canvas node clicks with studio
+      window.onConstellationNodeClick = function(node) {
+        if (node.category === 'give') {
+          currentGiveSkill = node.name;
         } else {
-            topTutors.forEach((tutor) => {
-                let card = document.createElement("div");
-                card.className = "card";
-                card.innerHTML = `
-                    <h3>${tutor.name}</h3>
-                    <p>Teaches: ${tutor.teachSkills.join(", ")}</p>
-                    <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
-                `;
-                featuredContainer.appendChild(card);
-            });
+          currentSeekSkill = node.name;
         }
-
-        // Fetch a random quote as a simple "Tip of the Day" using async/await
-        async function loadTip() {
-            let tipText = document.getElementById("tipText");
-            try {
-                let response = await fetch("https://dummyjson.com/quotes/random");
-                let data = await response.json();
-                tipText.textContent = `"${data.quote}" - ${data.author}`;
-            } catch (error) {
-                tipText.textContent = "Could not load tip right now. Try again later.";
-            }
-        }
-
-        loadTip();
-    </script>
+        updateBarterStudio();
+      };
+    });
+  </script>
 </body>
 </html>

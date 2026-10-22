@@ -1,158 +1,452 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Find a Tutor</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap — Reciprocal Barter Matches</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .match-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform var(--duration-fast) var(--ease-expo), border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+      position: relative;
+    }
+
+    .match-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .match-card.is-mutual {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .match-card.is-mutual:hover {
+      border-color: var(--accent-mutual);
+      box-shadow: 0 8px 30px -4px rgba(52, 211, 153, 0.15);
+    }
+
+    .bilateral-exchange-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      background-color: var(--surface-sunken);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin: 16px 0;
+    }
+
+    .exchange-column {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .exchange-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--font-mono);
+    }
+
+    .exchange-label.give {
+      color: var(--accent-give);
+    }
+
+    .exchange-label.seek {
+      color: var(--accent-seek);
+    }
+
+    .exchange-bridge-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--surface-raised);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      color: var(--accent-mutual);
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
+  <main class="main-content">
+
+    <!-- Page Editorial Header -->
+    <header style="padding: 24px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div class="badge badge-mutual" style="margin-bottom: 10px;">
+          ⇄ Real-Time Bilateral Matching
+        </div>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px;">
+          Compatible Barter Partners
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14.5px; max-width: 620px; line-height: 1.6; margin: 0;">
+          Ranked by mutual reciprocity math: your offered skills self-joined with their wishlist, and vice-versa. Zero cash friction.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="skills.html" class="btn btn-secondary btn-sm">
+          Edit My Skills Matrix &rarr;
+        </a>
+      </div>
     </header>
 
-    <div class="container">
+    <!-- Filters & Search Toolbar -->
+    <div class="card" style="margin-bottom: 24px; padding: 16px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="form-control" 
+          placeholder="Search by mentor name or skill (e.g. Python, Guitar, Figma)..." 
+          style="flex: 1; min-width: 260px;"
+        >
 
-        <div id="blockedView" style="display:none;">
-            <h1>Find a Tutor</h1>
-            <p style="color:#64748b;">Teachers don't use Find Tutor. Head to your <a href="skills.html" style="color:#2563eb; font-weight:600;">Teaching section</a> instead.</p>
-        </div>
+        <select id="typeFilter" class="form-control" style="width: 210px;">
+          <option value="all" selected>All Alignments</option>
+          <option value="mutual">Mutual Reciprocal Only (⇄)</option>
+          <option value="one-way">One-Way Alignments</option>
+        </select>
 
-        <div id="tutorListView" style="display:none;">
-            <h1>Find a Tutor</h1>
-            <p style="color:#64748b; margin-bottom:24px;">Discover verified peer tutors on SkillSwap. Search by tutor name or skill, or sort by tutor rank.</p>
-
-            <div style="display:flex; gap:16px; margin-bottom:32px; flex-wrap:wrap;">
-                <input type="text" id="searchInput" placeholder="🔍 Search by tutor name or skill (e.g. Python, Design)..." style="flex:1; min-width:260px; margin-bottom:0;">
-                <button class="btn btn-secondary" id="sortBtn">Sort by Rank 🏆</button>
-            </div>
-
-            <div class="grid" id="tutorContainer"></div>
-            <p id="noTutors" style="display:none; color:#64748b; margin-top:20px; font-weight:500;">No teachers have registered yet. Check back soon!</p>
-        </div>
-
+        <select id="categoryFilter" class="form-control" style="width: 170px;">
+          <option value="all">All Categories</option>
+          <option value="Technology">Technology</option>
+          <option value="Music">Music</option>
+          <option value="Design">Design</option>
+          <option value="Languages">Languages</option>
+          <option value="Business">Business</option>
+        </select>
+      </div>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
-        </div>
-    </footer>
+    <!-- Active Persona Info Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 12.5px; color: var(--text-faint);">
+      <div id="matchSummaryCount">Loading compatible barter matches...</div>
+      <div>Change persona in top-right to test reciprocal perspectives</div>
+    </div>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+    <!-- Matches Grid -->
+    <div class="grid-2" id="matchesContainer">
+      <!-- Populated dynamically -->
+    </div>
+    
+    <div id="noMatchesNotice" style="display: none; text-align: center; padding: 60px 20px; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
+      <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">No matching members found</h3>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px; max-width: 440px; margin-left: auto; margin-right: auto;">
+        Try broadening your filter criteria or add more skills to your matrix to unlock more mutual connections.
+      </p>
+      <a href="skills.html" class="btn btn-primary">Update Skills Matrix</a>
+    </div>
 
-        if (user.role === "teacher") {
-            document.getElementById("blockedView").style.display = "block";
-        } else {
-            document.getElementById("tutorListView").style.display = "block";
-            setupFindTutor();
+    <!-- Request Swap Modal -->
+    <div class="modal-backdrop" id="requestModalBackdrop">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);">
+          <div>
+            <span class="badge badge-give" style="margin-bottom: 6px;">Barter Proposal Handshake</span>
+            <h3 style="font-size: 19px; font-weight: 700; margin: 0;">Propose Reciprocal Swap</h3>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="closeModalBtn" style="font-size: 20px; line-height: 1; padding: 4px 8px;">&times;</button>
+        </div>
+
+        <form id="swapRequestForm">
+          <input type="hidden" id="recipientIdInput">
+          
+          <!-- Partner Header -->
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding: 12px; background-color: var(--surface-sunken); border-radius: var(--radius-md); border: 1px solid var(--rule);">
+            <div class="user-avatar" id="modalAvatar" style="width: 40px; height: 40px; font-size: 15px;"></div>
+            <div>
+              <div style="font-weight: 700; font-size: 15px;" id="modalRecipientName">Partner</div>
+              <div style="font-size: 12px; color: var(--text-muted);" id="modalRecipientMeta">Timezone · Rating</div>
+            </div>
+          </div>
+
+          <!-- Skill You Teach -->
+          <div class="form-group">
+            <label class="form-label" style="color: var(--accent-give);">
+              ⇄ Skill You Will Teach (from your offered skills)
+            </label>
+            <select class="form-control" id="offeredSkillSelect" required></select>
+          </div>
+
+          <!-- Skill You Want to Learn -->
+          <div class="form-group">
+            <label class="form-label" style="color: var(--accent-seek);">
+              ⇄ Skill You Want to Learn (from their offered skills)
+            </label>
+            <select class="form-control" id="requestedSkillSelect" required></select>
+          </div>
+
+          <!-- Duration & Note -->
+          <div class="form-group">
+            <label class="form-label">Exchange Note &amp; Session Agenda</label>
+            <textarea class="form-control" id="swapNoteInput" rows="3" placeholder="Introduce yourself and describe specific topics you want to cover..."></textarea>
+          </div>
+
+          <!-- Idempotency & Safety Token -->
+          <div style="font-size: 11px; color: var(--text-faint); margin-bottom: 24px; font-family: var(--font-mono);">
+            Idempotency Key: <span id="idempotencyKeyDisplay" style="color: var(--text-muted);"></span>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="submitProposalBtn">Send Barter Proposal &rarr;</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    let allMatches = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderNavbar();
+
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Check URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialQuery = urlParams.get("skill") || urlParams.get("discipline");
+      if (initialQuery) {
+        document.getElementById("searchInput").value = initialQuery;
+      }
+
+      loadMatches();
+
+      // Search & Filters
+      document.getElementById("searchInput").addEventListener("input", applyFilters);
+      document.getElementById("typeFilter").addEventListener("change", applyFilters);
+      document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+
+      // Modal bindings
+      document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+      document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+      document.getElementById("swapRequestForm").addEventListener("submit", handleSwapSubmit);
+    });
+
+    function loadMatches() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      allMatches = window.SkillSwapEngine.findMatchesForUser(currentUser.id);
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      const typeFilter = document.getElementById("typeFilter").value;
+      const catFilter = document.getElementById("categoryFilter").value;
+
+      const filtered = allMatches.filter(m => {
+        // Type filter
+        if (typeFilter === "mutual" && !m.isMutual) return false;
+        if (typeFilter === "one-way" && m.isMutual) return false;
+
+        // Category filter
+        if (catFilter !== "all") {
+          const hasOfferCat = m.allTheirOffers.some(s => s.category === catFilter);
+          const hasWantCat = m.allTheirWants.some(s => s.category === catFilter);
+          if (!hasOfferCat && !hasWantCat) return false;
         }
 
-        function setupFindTutor() {
-            let allTutors = getTutors();
-
-            let tutorContainer = document.getElementById("tutorContainer");
-            let noTutors = document.getElementById("noTutors");
-            let searchInput = document.getElementById("searchInput");
-            let sortBtn = document.getElementById("sortBtn");
-            let sortedDescending = true;
-
-            function displayTutors(tutorArray) {
-                tutorContainer.innerHTML = "";
-
-                if (tutorArray.length === 0) {
-                    noTutors.style.display = "block";
-                    return;
-                }
-                noTutors.style.display = "none";
-
-                tutorArray.forEach((tutor) => {
-                    let skillsText = tutor.teachSkills.length > 0 ? tutor.teachSkills.join(", ") : "No skills listed yet";
-                    let card = document.createElement("div");
-                    card.className = "card";
-                    card.innerHTML = `
-                        <h3>${tutor.name}</h3>
-                        <p>Teaches: ${skillsText}</p>
-                        <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
-                        <button class="btn btn-primary connectBtn" data-id="${tutor.id}">Get Connected</button>
-                    `;
-                    tutorContainer.appendChild(card);
-                });
-
-                document.querySelectorAll(".connectBtn").forEach((btn) => {
-                    btn.addEventListener("click", (e) => {
-                        let id = e.target.getAttribute("data-id");
-                        let tutor = getUsers().find(u => u.id === id);
-                        if (tutor) startConnection(tutor);
-                    });
-                });
-            }
-
-            displayTutors(allTutors);
-
-            searchInput.addEventListener("input", () => {
-                let query = searchInput.value.toLowerCase();
-                let filtered = allTutors.filter((tutor) => {
-                    let nameMatch = tutor.name.toLowerCase().includes(query);
-                    let skillMatch = tutor.teachSkills.some(skill => skill.toLowerCase().includes(query));
-                    return nameMatch || skillMatch;
-                });
-                displayTutors(filtered);
-            });
-
-            sortBtn.addEventListener("click", () => {
-                let sorted = [...allTutors].sort((a, b) => {
-                    return sortedDescending ? b.coins - a.coins : a.coins - b.coins;
-                });
-                sortedDescending = !sortedDescending;
-                displayTutors(sorted);
-            });
+        // Query search
+        if (query) {
+          const nameMatch = m.user.name.toLowerCase().includes(query);
+          const skillsMatch = m.allTheirOffers.some(s => s.skillName.toLowerCase().includes(query)) ||
+                              m.allTheirWants.some(s => s.skillName.toLowerCase().includes(query));
+          if (!nameMatch && !skillsMatch) return false;
         }
-    </script>
+
+        return true;
+      });
+
+      renderMatches(filtered);
+    }
+
+    function renderMatches(matches) {
+      const container = document.getElementById("matchesContainer");
+      const noMatches = document.getElementById("noMatchesNotice");
+      const countLabel = document.getElementById("matchSummaryCount");
+
+      countLabel.textContent = `Showing ${matches.length} compatible peer barter opportunities`;
+
+      if (matches.length === 0) {
+        container.innerHTML = "";
+        noMatches.style.display = "block";
+        return;
+      }
+
+      noMatches.style.display = "none";
+      container.innerHTML = matches.map(m => `
+        <article class="match-card ${m.isMutual ? 'is-mutual' : ''}">
+          <div>
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-avatar" style="background-color: ${m.user.avatarColor}; width: 44px; height: 44px; font-size: 15px;">
+                  ${m.user.name.split(" ").map(n => n[0]).join("")}
+                </div>
+                <div>
+                  <h2 style="font-size: 17px; font-weight: 700; margin: 0;">${m.user.name}</h2>
+                  <div style="font-size: 12px; color: var(--text-faint);">
+                    ${m.user.timezone} &bull; <strong style="color: var(--coin-gold);">${m.user.reputation} ★</strong> (${m.user.sessionsCompleted} completed)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Match Reciprocity Pill -->
+              <div class="badge ${m.isMutual ? 'badge-mutual' : 'badge-seek'}" title="${m.scoreBreakdown.map(s => s.label + ': ' + s.pts).join(', ')}">
+                <span style="font-size: 13px;">${m.isMutual ? '⇄' : '→'}</span>
+                <span>${m.matchScore}% ${m.isMutual ? 'Mutual' : 'One-Way'}</span>
+              </div>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+              ${m.user.bio}
+            </p>
+
+            <!-- Bilateral Exchange Grid -->
+            <div class="bilateral-exchange-grid">
+              <!-- Left: You Teach Them -->
+              <div class="exchange-column">
+                <span class="exchange-label give">You Teach Them:</span>
+                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                  ${m.iCanTeachThem.length > 0 ? m.iCanTeachThem.map(s => `
+                    <span class="skill-tag give" style="font-size: 11.5px;">${s.skillName}</span>
+                  `).join('') : `
+                    <span style="font-size: 11.5px; color: var(--text-faint);">No direct offer match</span>
+                  `}
+                </div>
+              </div>
+
+              <!-- Center Flow Icon -->
+              <div class="exchange-bridge-icon">⇄</div>
+
+              <!-- Right: They Teach You -->
+              <div class="exchange-column" style="text-align: right; align-items: flex-end;">
+                <span class="exchange-label seek">They Teach You:</span>
+                <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;">
+                  ${m.theyCanTeachMe.length > 0 ? m.theyCanTeachMe.map(s => `
+                    <span class="skill-tag seek" style="font-size: 11.5px;">${s.skillName}</span>
+                  `).join('') : `
+                    <span style="font-size: 11.5px; color: var(--text-faint);">No direct seek match</span>
+                  `}
+                </div>
+              </div>
+            </div>
+
+            <!-- Rationale explainability string -->
+            <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 16px; font-style: italic;">
+              "${m.explanation}"
+            </div>
+          </div>
+
+          <!-- Card Action Button -->
+          <div style="border-top: 1px solid var(--rule); padding-top: 14px;">
+            <button 
+              type="button" 
+              class="btn btn-primary" 
+              style="width: 100%; justify-content: center;"
+              onclick="openSwapModal('${m.user.id}')"
+            >
+              Propose Barter Handshake &rarr;
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function openSwapModal(targetUserId) {
+      const targetUser = window.SkillSwapStorage.getUserById(targetUserId);
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!targetUser || !currentUser) return;
+
+      document.getElementById("recipientIdInput").value = targetUser.id;
+      document.getElementById("modalRecipientName").textContent = targetUser.name;
+      document.getElementById("modalRecipientMeta").textContent = `${targetUser.timezone} · ${targetUser.reputation} ★ (${targetUser.sessionsCompleted} completed)`;
+
+      const avatar = document.getElementById("modalAvatar");
+      avatar.style.backgroundColor = targetUser.avatarColor;
+      avatar.textContent = targetUser.name.split(" ").map(n => n[0]).join("");
+
+      // Populate skills you can teach
+      const allSkills = window.SkillSwapStorage.getUserSkills();
+      const myOffers = allSkills.filter(s => s.userId === currentUser.id && s.type === "OFFER");
+      const theirOffers = allSkills.filter(s => s.userId === targetUser.id && s.type === "OFFER");
+
+      const offeredSelect = document.getElementById("offeredSkillSelect");
+      offeredSelect.innerHTML = myOffers.map(s => `
+        <option value="${s.skillName}">${s.skillName} (${s.level || 'Intermediate'})</option>
+      `).join('');
+
+      const requestedSelect = document.getElementById("requestedSkillSelect");
+      requestedSelect.innerHTML = theirOffers.map(s => `
+        <option value="${s.skillName}">${s.skillName} (${s.level || 'Intermediate'})</option>
+      `).join('');
+
+      // Generate Idempotency Key
+      const idemKey = `idemp_prop_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      document.getElementById("idempotencyKeyDisplay").textContent = idemKey;
+
+      document.getElementById("requestModalBackdrop").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("requestModalBackdrop").classList.remove("active");
+    }
+
+    function handleSwapSubmit(e) {
+      e.preventDefault();
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const recipientId = document.getElementById("recipientIdInput").value;
+      const offeredSkill = document.getElementById("offeredSkillSelect").value;
+      const wantedSkill = document.getElementById("requestedSkillSelect").value;
+      const notes = document.getElementById("swapNoteInput").value;
+      const idempotencyKey = document.getElementById("idempotencyKeyDisplay").textContent;
+
+      try {
+        const swap = window.SkillSwapEngine.proposeSwap({
+          requesterId: currentUser.id,
+          recipientId,
+          offeredSkill,
+          wantedSkill,
+          sessionDurationMin: 60,
+          notes,
+          idempotencyKey
+        });
+
+        closeModal();
+        window.SkillSwapEngine.showToast(`Barter proposal sent to ${window.SkillSwapStorage.getUserById(recipientId).name}! Status: PENDING`, "success");
+        setTimeout(() => {
+          window.location.href = "sessions.html";
+        }, 800);
+      } catch (err) {
+        window.SkillSwapEngine.showToast(err.message, "error");
+      }
+    }
+  </script>
 </body>
 </html>

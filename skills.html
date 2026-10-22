@@ -1,196 +1,247 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Skills Management</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Skills Matrix</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
+  <main class="main-content">
+    <!-- Page Editorial Header -->
+    <header style="padding: 24px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div class="badge badge-mutual" style="margin-bottom: 10px;">
+          ⇄ Reciprocal Matrix
+        </div>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px;">
+          Skills Matrix Configuration
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14.5px; max-width: 620px; line-height: 1.6; margin: 0;">
+          Define what you share with peers and what you want to learn. Our engine continuously self-joins these against active community members.
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span class="badge badge-mutual" id="liveMatchCounter" style="padding: 8px 14px; font-size: 13px;">
+          Calculating matches...
+        </span>
+        <a href="find-tutor.html" class="btn btn-primary btn-sm">View Mutual Matches &rarr;</a>
+      </div>
     </header>
 
-    <div class="container">
-
-        <!-- Teacher view -->
-        <div id="teacherView" style="display:none;">
-            <h1>Teaching Skills</h1>
-            <p style="color:#64748b; margin-bottom:30px;">Add the skills you can teach. As soon as you add one, learners can discover you in Find Tutor.</p>
-
-            <div class="card" style="width:100%; max-width:540px; margin:0 auto;">
-                <h3>Skills I Can Teach</h3>
-                <p style="color:#64748b; font-size:0.875rem; margin-bottom:16px;">Type a skill or subject below and click Add.</p>
-                <div class="skill-add-row">
-                    <input type="text" id="teachInput" placeholder="e.g. Python, Graphic Design, Piano...">
-                    <button class="btn btn-primary" id="addTeachBtn">+ Add</button>
-                </div>
-                <ul class="skill-list" id="teachList"></ul>
-            </div>
+    <div class="grid-2">
+      <!-- 1. Skills I Offer (Can Teach) - Terracotta Ground -->
+      <div class="card" style="border-top: 3px solid var(--accent-give);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--accent-give);">Skills I Can Teach (Give)</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted);">Knowledge you offer in exchange for other learning.</p>
+          </div>
+          <span class="badge badge-give" id="offerCountBadge">0 Skills</span>
         </div>
 
-        <!-- Learner view -->
-        <div id="learnerView" style="display:none;">
-            <h1>Learning Goals</h1>
-            <p style="color:#64748b; margin-bottom:30px;">Add skills you want to learn to keep track of your personal learning goals.</p>
+        <!-- Add Skill Form -->
+        <form id="addOfferForm" style="display: grid; grid-template-columns: 1fr 110px 105px auto; gap: 8px; margin-bottom: 20px;">
+          <input type="text" id="offerNameInput" class="form-control" placeholder="Skill name (e.g. Python, Piano)..." required>
+          <select id="offerCategoryInput" class="form-control">
+            <option value="Technology">Tech</option>
+            <option value="Music">Music</option>
+            <option value="Design">Design</option>
+            <option value="Languages">Languages</option>
+            <option value="Business">Business</option>
+          </select>
+          <select id="offerProficiencyInput" class="form-control">
+            <option value="Advanced">Advanced</option>
+            <option value="Intermediate">Intermed</option>
+            <option value="Beginner">Beginner</option>
+          </select>
+          <button type="submit" class="btn btn-terracotta btn-sm">+ Add</button>
+        </form>
 
-            <div class="card" style="width:100%; max-width:540px; margin:0 auto;">
-                <h3>Skills I Want to Learn</h3>
-                <p style="color:#64748b; font-size:0.875rem; margin-bottom:16px;">Type a skill you wish to master and click Add.</p>
-                <div class="skill-add-row">
-                    <input type="text" id="learnInput" placeholder="e.g. Photography, French, Web Dev...">
-                    <button class="btn btn-primary" id="addLearnBtn">+ Add</button>
-                </div>
-                <ul class="skill-list" id="learnList"></ul>
-            </div>
+        <!-- List of Offered Skills -->
+        <div id="offerSkillsList" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- 2. Skills I Want (Want to Learn) - Cerulean Ground -->
+      <div class="card" style="border-top: 3px solid var(--accent-seek);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--accent-seek);">Skills I Want to Learn (Receive)</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted);">Your personal curiosities and target learning goals.</p>
+          </div>
+          <span class="badge badge-seek" id="wantCountBadge">0 Skills</span>
         </div>
 
-        <!-- Admin view -->
-        <div id="adminView" style="display:none;">
-            <h1>Skills Overview</h1>
-            <p style="color:#64748b;">Admins don't teach or learn skills. Visit the Dashboard for a full platform overview.</p>
-        </div>
+        <!-- Add Wanted Skill Form -->
+        <form id="addWantForm" style="display: grid; grid-template-columns: 1fr 110px 105px auto; gap: 8px; margin-bottom: 20px;">
+          <input type="text" id="wantNameInput" class="form-control" placeholder="Goal (e.g. Acoustic Guitar)..." required>
+          <select id="wantCategoryInput" class="form-control">
+            <option value="Technology">Tech</option>
+            <option value="Music">Music</option>
+            <option value="Design">Design</option>
+            <option value="Languages">Languages</option>
+            <option value="Business">Business</option>
+          </select>
+          <select id="wantProficiencyInput" class="form-control">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermed</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+          <button type="submit" class="btn btn-primary btn-sm">+ Add</button>
+        </form>
 
+        <!-- List of Wanted Skills -->
+        <div id="wantSkillsList" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+    <!-- Quick Skill Suggestions -->
+    <div class="card" style="margin-top: 28px;">
+      <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Quick Suggestions from Popular Skills</h3>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="suggestionsRow">
+        <button class="skill-tag suggest-btn" data-name="TypeScript">TypeScript</button>
+        <button class="skill-tag suggest-btn" data-name="Figma Systems">Figma Systems</button>
+        <button class="skill-tag suggest-btn" data-name="Conversational French">Conversational French</button>
+        <button class="skill-tag suggest-btn" data-name="SQL & Data Analysis">SQL & Data Analysis</button>
+        <button class="skill-tag suggest-btn" data-name="Acoustic Guitar">Acoustic Guitar</button>
+        <button class="skill-tag suggest-btn" data-name="Public Speaking">Public Speaking</button>
+        <button class="skill-tag suggest-btn" data-name="Docker & Devops">Docker & DevOps</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      loadSkills();
+
+      // Form Submissions
+      document.getElementById("addOfferForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("offerNameInput").value.trim();
+        const category = document.getElementById("offerCategoryInput").value;
+        const proficiency = document.getElementById("offerProficiencyInput").value;
+        if (!name) return;
+
+        window.SkillSwapStorage.addUserSkill({
+          userId: currentUser.id,
+          skillName: name,
+          category,
+          type: "OFFER",
+          proficiency
+        });
+
+        document.getElementById("offerNameInput").value = "";
+        window.showToast(`Added "${name}" to skills you teach`, "success");
+        loadSkills();
+      });
+
+      document.getElementById("addWantForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("wantNameInput").value.trim();
+        const category = document.getElementById("wantCategoryInput").value;
+        const proficiency = document.getElementById("wantProficiencyInput").value;
+        if (!name) return;
+
+        window.SkillSwapStorage.addUserSkill({
+          userId: currentUser.id,
+          skillName: name,
+          category,
+          type: "WANT",
+          proficiency
+        });
+
+        document.getElementById("wantNameInput").value = "";
+        window.showToast(`Added "${name}" to learning goals`, "success");
+        loadSkills();
+      });
+
+      // Quick Suggestions
+      document.querySelectorAll(".suggest-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const skillName = btn.getAttribute("data-name");
+          document.getElementById("wantNameInput").value = skillName;
+          document.getElementById("wantNameInput").focus();
+        });
+      });
+    });
+
+    function loadSkills() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const allUserSkills = window.SkillSwapStorage.getUserSkills(currentUser.id);
+
+      const offers = allUserSkills.filter(s => s.type === "OFFER");
+      const wants = allUserSkills.filter(s => s.type === "WANT");
+
+      document.getElementById("offerCountBadge").textContent = `${offers.length} Skills`;
+      document.getElementById("wantCountBadge").textContent = `${wants.length} Skills`;
+
+      // Render Offers
+      const offerListEl = document.getElementById("offerSkillsList");
+      if (offers.length === 0) {
+        offerListEl.innerHTML = `<p style="color: var(--text-muted); font-size: 13px; padding: 12px 0;">No skills listed to teach yet. Add one above!</p>`;
+      } else {
+        offerListEl.innerHTML = offers.map(s => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background-color: var(--ground); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            <div>
+              <span style="font-weight: 600; font-size: 14px;">${s.skillName}</span>
+              <span style="font-size: 12px; color: var(--text-faint); margin-left: 8px;">${s.category} &bull; ${s.proficiency}</span>
             </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
+            <button class="btn btn-secondary btn-sm delete-skill-btn" data-id="${s.id}" style="padding: 4px 8px; font-size: 11.5px; color: var(--negative);">
+              Remove
+            </button>
+          </div>
+        `).join('');
+      }
+
+      // Render Wants
+      const wantListEl = document.getElementById("wantSkillsList");
+      if (wants.length === 0) {
+        wantListEl.innerHTML = `<p style="color: var(--text-muted); font-size: 13px; padding: 12px 0;">No learning goals listed yet. Add one above!</p>`;
+      } else {
+        wantListEl.innerHTML = wants.map(s => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background-color: var(--ground); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            <div>
+              <span style="font-weight: 600; font-size: 14px;">${s.skillName}</span>
+              <span style="font-size: 12px; color: var(--text-faint); margin-left: 8px;">${s.category} &bull; Target: ${s.proficiency}</span>
             </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
-        </div>
-    </footer>
+            <button class="btn btn-secondary btn-sm delete-skill-btn" data-id="${s.id}" style="padding: 4px 8px; font-size: 11.5px; color: var(--negative);">
+              Remove
+            </button>
+          </div>
+        `).join('');
+      }
 
-  
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+      // Wire delete handlers
+      document.querySelectorAll(".delete-skill-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          window.SkillSwapStorage.removeUserSkill(id);
+          window.showToast("Skill removed", "info");
+          loadSkills();
+        });
+      });
 
-        // ----- Show only the section that matches this profile's role -----
-        if (user.role === "teacher") {
-            document.getElementById("teacherView").style.display = "block";
-        } else if (user.role === "learner") {
-            document.getElementById("learnerView").style.display = "block";
-        } else {
-            document.getElementById("adminView").style.display = "block";
-        }
-
-        let teachList = document.getElementById("teachList");
-        let learnList = document.getElementById("learnList");
-        let teachInput = document.getElementById("teachInput");
-        let learnInput = document.getElementById("learnInput");
-
-        function displaySkills() {
-            if (teachList) {
-                teachList.innerHTML = "";
-                user.teachSkills.forEach((skill, index) => {
-                    let li = document.createElement("li");
-                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeTeachBtn">Remove</button>`;
-                    teachList.appendChild(li);
-                });
-                document.querySelectorAll(".removeTeachBtn").forEach((btn) => {
-                    btn.addEventListener("click", (e) => {
-                        let index = e.target.getAttribute("data-index");
-                        user.teachSkills.splice(index, 1);
-                        updateCurrentUser(user);
-                        displaySkills();
-                    });
-                });
-            }
-
-            if (learnList) {
-                learnList.innerHTML = "";
-                user.learnSkills.forEach((skill, index) => {
-                    let li = document.createElement("li");
-                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeLearnBtn">Remove</button>`;
-                    learnList.appendChild(li);
-                });
-                document.querySelectorAll(".removeLearnBtn").forEach((btn) => {
-                    btn.addEventListener("click", (e) => {
-                        let index = e.target.getAttribute("data-index");
-                        user.learnSkills.splice(index, 1);
-                        updateCurrentUser(user);
-                        displaySkills();
-                    });
-                });
-            }
-        }
-
-        displaySkills();
-
-        if (teachInput) {
-            document.getElementById("addTeachBtn").addEventListener("click", () => {
-                let value = teachInput.value.trim();
-                if (value == "") {
-                    alert("Please enter a skill.");
-                    return;
-                }
-                user.teachSkills.push(value);
-                updateCurrentUser(user);
-                teachInput.value = "";
-                displaySkills();
-            });
-            teachInput.addEventListener("keydown", (e) => {
-                if (e.key == "Enter") document.getElementById("addTeachBtn").click();
-            });
-        }
-
-        if (learnInput) {
-            document.getElementById("addLearnBtn").addEventListener("click", () => {
-                let value = learnInput.value.trim();
-                if (value == "") {
-                    alert("Please enter a skill.");
-                    return;
-                }
-                user.learnSkills.push(value);
-                updateCurrentUser(user);
-                learnInput.value = "";
-                displaySkills();
-            });
-            learnInput.addEventListener("keydown", (e) => {
-                if (e.key == "Enter") document.getElementById("addLearnBtn").click();
-            });
-        }
-    </script>
+      // Update Live Reciprocity Match Counter
+      const matches = window.SkillSwapEngine.findMatchesForUser(currentUser.id);
+      const mutualCount = matches.filter(m => m.isMutual).length;
+      document.getElementById("liveMatchCounter").textContent = `⇄ ${mutualCount} Mutual Matches Available`;
+    }
+  </script>
 </body>
 </html>

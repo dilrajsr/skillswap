@@ -1,123 +1,224 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Profile Settings</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Member Profile &amp; Reputation</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container">
-        <form id="profileForm" class="form-box">
-            <h1>Edit Profile</h1>
-            <p id="roleNote" style="text-align:center; color:#64748b; font-size:14px; margin-top:-15px; margin-bottom:20px; font-weight:600;"></p>
-
-            <label for="name">Full Name</label>
-            <input type="text" id="name" placeholder="Your display name">
-
-            <label for="email">Email Address (Read-only)</label>
-            <input type="text" id="email" disabled>
-
-            <label for="bio">About Me &amp; Experience</label>
-            <textarea id="bio" rows="4" placeholder="Tell other learners about your skills, background, and teaching style..."></textarea>
-
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <p class="success-msg" id="successMsg">✓ Profile updated successfully!</p>
-        </form>
-
-        <div id="adminNotice" class="form-box" style="display:none; text-align:center;">
-            <h1>Admin Profile</h1>
-            <p style="color:#64748b; margin-top:10px;">The system administrator account is fixed in the code and cannot be edited.</p>
+  <main class="main-content">
+    <!-- Editorial Page Header -->
+    <div class="page-header" style="margin-bottom: 28px;">
+      <div>
+        <div style="font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-give); margin-bottom: 6px;">
+          PRACTITIONER IDENTITY
         </div>
+        <h1 class="page-title" style="font-family: var(--font-serif); font-size: 36px; font-weight: 400; letter-spacing: -0.02em;">
+          Profile &amp; <em>Reputation Standing</em>
+        </h1>
+        <p class="page-desc" style="max-width: 600px; color: var(--text-muted); font-size: 14.5px; line-height: 1.6;">
+          Your public barter identity, teaching philosophy, scheduling timezone, and verified endorsements from bilateral peer exchanges.
+        </p>
+      </div>
+      <div>
+        <a href="skills.html" class="btn btn-secondary">
+          Edit Skills Matrix &rarr;
+        </a>
+      </div>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+    <!-- Member Identity Hero Card -->
+    <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(24, 32, 48, 0.7) 0%, rgba(17, 22, 34, 0.95) 100%); border-color: rgba(255,255,255,0.08); padding: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 18px;">
+          <div class="user-avatar" id="heroAvatar" style="width: 64px; height: 64px; font-size: 22px; background: linear-gradient(135deg, var(--accent-give), #c85a3c); box-shadow: 0 4px 20px rgba(224, 122, 95, 0.3);">
+            --
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h2 id="heroName" style="font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--text); margin: 0;">--</h2>
+              <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-mutual); border: 1px solid rgba(52, 211, 153, 0.3); font-size: 11px;">
+                VERIFIED PRACTITIONER
+              </span>
             </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 6px; font-size: 12.5px; color: var(--text-muted);">
+              <span id="heroEmail">--</span>
+              <span>&bull;</span>
+              <span id="heroTimezone" style="font-family: var(--font-mono); font-size: 12px; color: var(--accent-seek);">--</span>
             </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+          </div>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <!-- 3 Quick Metrics -->
+        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 700; color: var(--warning); font-family: var(--font-mono);" id="heroRating">
+              5.0
+            </div>
+            <div style="font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em;">Peer Rating</div>
+          </div>
+          <div style="width: 1px; height: 32px; background: var(--border);"></div>
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 700; color: var(--coin-gold); font-family: var(--font-mono);" id="heroCoins">
+              120
+            </div>
+            <div style="font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em;">Skill Coins</div>
+          </div>
+          <div style="width: 1px; height: 32px; background: var(--border);"></div>
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 700; color: var(--accent-seek); font-family: var(--font-mono);" id="heroSwaps">
+              3
+            </div>
+            <div style="font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em;">Swaps Logged</div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </div>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
+    <!-- 2 Column Workspace -->
+    <div class="grid-2">
+      <!-- 1. Edit Profile Form -->
+      <div class="card">
+        <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+          <span>Personal Information &amp; Bio</span>
+        </h2>
 
-        let nameInput = document.getElementById("name");
-        let emailInput = document.getElementById("email");
-        let bioInput = document.getElementById("bio");
-        let profileForm = document.getElementById("profileForm");
-        let successMsg = document.getElementById("successMsg");
+        <form id="profileForm">
+          <div class="input-group">
+            <label class="input-label" for="profileNameInput">Full Legal / Display Name</label>
+            <input type="text" id="profileNameInput" class="input-text" required>
+          </div>
 
-        if (user && user.role === "admin") {
-            profileForm.style.display = "none";
-            document.getElementById("adminNotice").style.display = "block";
-        } else if (user) {
-            nameInput.value = user.name;
-            emailInput.value = user.email;
-            bioInput.value = user.bio || "";
-            let roleLabel = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-            document.getElementById("roleNote").textContent = `Editing your ${roleLabel} profile`;
-        }
+          <div class="input-group">
+            <label class="input-label" for="profileEmailInput">Account Email Address (Immutable)</label>
+            <input type="email" id="profileEmailInput" class="input-text" disabled style="opacity: 0.6; cursor: not-allowed;">
+          </div>
 
-        profileForm.addEventListener("submit", (e) => {
-            e.preventDefault();
+          <div class="input-group">
+            <label class="input-label" for="profileTimezoneSelect">Timezone (Powers Bilateral Scheduling)</label>
+            <select id="profileTimezoneSelect" class="input-select" required>
+              <option value="UTC-5 (Eastern Time)">UTC-5 (Eastern Time)</option>
+              <option value="UTC-6 (Central Time)">UTC-6 (Central Time)</option>
+              <option value="UTC-7 (Mountain Time)">UTC-7 (Mountain Time)</option>
+              <option value="UTC-8 (Pacific Time)">UTC-8 (Pacific Time)</option>
+              <option value="UTC+0 (GMT/UTC)">UTC+0 (GMT/UTC)</option>
+              <option value="UTC+1 (Central European Time)">UTC+1 (Central European Time)</option>
+              <option value="UTC+5:30 (India Standard Time)">UTC+5:30 (India Standard Time)</option>
+              <option value="UTC+8 (Singapore/Perth)">UTC+8 (Singapore/Perth)</option>
+            </select>
+          </div>
 
-            if (nameInput.value.trim() == "") {
-                alert("Name cannot be empty.");
-                return;
-            }
+          <div class="input-group">
+            <label class="input-label" for="profileBioInput">Teaching Philosophy &amp; Experience</label>
+            <textarea id="profileBioInput" class="input-textarea" rows="4" placeholder="Describe your practical background, teaching cadence, and what you enjoy learning..."></textarea>
+          </div>
 
-            user.name = nameInput.value.trim();
-            user.bio = bioInput.value.trim();
-            updateCurrentUser(user);
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Save Profile Changes
+          </button>
+        </form>
+      </div>
 
-            successMsg.style.display = "block";
-        });
-    </script>
+      <!-- 2. Verified Reviews & Endorsements -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h2 style="font-size: 16px; font-weight: 600;">Verified Peer Endorsements</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted);">Ratings awarded after confirmed barter sessions.</p>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 700; color: var(--warning); font-family: var(--font-mono);" id="repSummary">5.0 / 5.0</div>
+            <div style="font-size: 11px; color: var(--text-faint);">Average Rating</div>
+          </div>
+        </div>
+
+        <div id="reviewsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Populate Hero
+      const initials = currentUser.name.split(" ").map(n => n[0]).join("");
+      document.getElementById("heroAvatar").textContent = initials;
+      document.getElementById("heroName").textContent = currentUser.name;
+      document.getElementById("heroEmail").textContent = currentUser.email;
+      document.getElementById("heroTimezone").textContent = currentUser.timezone || "UTC-5 (Eastern Time)";
+      document.getElementById("heroRating").textContent = `${currentUser.reputation || '5.0'} / 5.0`;
+      
+      const coins = window.SkillSwapStorage.getCoins(currentUser.id);
+      document.getElementById("heroCoins").textContent = `${coins} Coins`;
+
+      const allSwaps = window.SkillSwapStorage.getSwaps();
+      const myCompleted = allSwaps.filter(s => 
+        (s.requesterId === currentUser.id || s.recipientId === currentUser.id) && s.status === 'COMPLETED'
+      );
+      document.getElementById("heroSwaps").textContent = myCompleted.length;
+
+      // Populate form
+      document.getElementById("profileNameInput").value = currentUser.name;
+      document.getElementById("profileEmailInput").value = currentUser.email;
+      document.getElementById("profileTimezoneSelect").value = currentUser.timezone || "UTC-5 (Eastern Time)";
+      document.getElementById("profileBioInput").value = currentUser.bio || "";
+      document.getElementById("repSummary").textContent = `${currentUser.reputation} / 5.0`;
+
+      // Handle submit
+      document.getElementById("profileForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        currentUser.name = document.getElementById("profileNameInput").value.trim();
+        currentUser.timezone = document.getElementById("profileTimezoneSelect").value;
+        currentUser.bio = document.getElementById("profileBioInput").value.trim();
+
+        window.SkillSwapStorage.updateUser(currentUser);
+        window.showToast("Profile details updated successfully!", "success");
+        setTimeout(() => window.location.reload(), 400);
+      });
+
+      // Load Reviews
+      const reviews = window.SkillSwapStorage.getReviews(currentUser.id);
+      const container = document.getElementById("reviewsContainer");
+
+      if (reviews.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 32px; text-align: center; color: var(--text-muted); font-size: 13.5px; background: var(--surface-raised); border: 1px dashed var(--border); border-radius: var(--radius-md);">
+            <div style="font-size: 24px; margin-bottom: 8px;">★</div>
+            No reviews logged yet. Complete your first 1-on-1 reciprocal session to earn peer endorsements!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = reviews.map(r => `
+        <div style="background-color: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; transition: border-color var(--duration-fast) ease;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 14px; color: var(--text);">${r.reviewerName}</strong>
+            <span style="color: var(--warning); font-size: 12.5px; font-weight: 600; font-family: var(--font-mono);">${'★'.repeat(r.rating || 5)} ${r.rating}.0</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; font-style: italic;">
+            "${r.comment}"
+          </p>
+          <div style="font-size: 11px; color: var(--text-faint); margin-top: 8px; font-family: var(--font-mono);">
+            Confirmed session &bull; ${new Date(r.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
 </body>
 </html>

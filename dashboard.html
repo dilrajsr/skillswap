@@ -1,231 +1,331 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Workspace Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
+  <main class="main-content">
+    <!-- Editorial Dashboard Header -->
+    <header style="padding: 24px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div class="badge badge-mutual" style="margin-bottom: 10px;">
+          ⇄ Member Workspace
+        </div>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px;" id="welcomeHeading">
+          Welcome back
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14.5px; max-width: 620px; line-height: 1.6; margin: 0;" id="welcomeSubtext">
+          Here is your active reciprocal knowledge exchange overview and pending action queue.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="find-tutor.html" class="btn btn-primary btn-sm">
+          Find New Matches &rarr;
+        </a>
+      </div>
     </header>
 
-    <div class="container">
-        <h1 id="welcomeText">Welcome!</h1>
-        <p style="color:#64748b; margin-bottom:30px;" id="welcomeSubtext">Here is a quick summary of your SkillSwap account.</p>
+    <!-- 4 KPI Cards (Tabular nums, restrained palette) -->
+    <div class="grid-4" style="margin-bottom: 28px;">
+      <div class="card">
+        <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-mono);">Available Matches</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--text);" class="tabular-nums" id="kpiMatches">0</div>
+        <div style="font-size: 12px; color: var(--accent-mutual); margin-top: 4px; font-weight: 600;" id="kpiMutualMatches">0 mutual</div>
+      </div>
 
-        <!-- Teacher dashboard -->
-        <div class="grid" id="teacherDashboard" style="display:none;">
-            <div class="card stat-card">
-                <p>Skills Taught</p>
-                <div class="stat-number" id="teachCount">0</div>
-                <a href="skills.html">Manage Skills &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Sessions Taught</p>
-                <div class="stat-number" id="taughtCount">0</div>
-                <a href="sessions.html">View Sessions &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Coins Balance</p>
-                <div class="stat-number" id="teacherCoinCount">0</div>
-                <a href="coins.html">View Coins &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Reputation Score</p>
-                <div class="stat-number" id="teacherRepCount">0</div>
-                <span style="font-size:13px; color:#94a3b8; font-weight:600;">out of 5.0</span>
-            </div>
-        </div>
+      <div class="card">
+        <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-mono);">Active &amp; Pending</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--accent-seek);" class="tabular-nums" id="kpiActiveSwaps">0</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="kpiPendingNotice">0 requiring action</div>
+      </div>
 
-        <!-- Learner dashboard -->
-        <div class="grid" id="learnerDashboard" style="display:none;">
-            <div class="card stat-card">
-                <p>Skills Learning</p>
-                <div class="stat-number" id="learnCount">0</div>
-                <a href="skills.html">Manage Skills &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Sessions Attended</p>
-                <div class="stat-number" id="attendedCount">0</div>
-                <a href="sessions.html">View Sessions &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Coins Balance</p>
-                <div class="stat-number" id="learnerCoinCount">0</div>
-                <a href="coins.html">View Coins &rarr;</a>
-            </div>
-            <div class="card stat-card">
-                <p>Reputation Score</p>
-                <div class="stat-number" id="learnerRepCount">0</div>
-                <span style="font-size:13px; color:#94a3b8; font-weight:600;">out of 5.0</span>
-            </div>
-        </div>
+      <div class="card">
+        <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-mono);">Skill Coins</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--coin-gold);" class="tabular-nums" id="kpiCoins">0</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Earned via teaching</div>
+      </div>
 
-        <!-- Admin dashboard: shown only when role is admin -->
-        <div id="adminDashboard" style="display:none;">
-            <div class="grid" style="margin-bottom:40px;">
-                <div class="card stat-card">
-                    <p>Total Registered Users</p>
-                    <div class="stat-number" id="totalUsers">0</div>
-                </div>
-                <div class="card stat-card">
-                    <p>Total Tutors</p>
-                    <div class="stat-number" id="totalTutors">0</div>
-                </div>
-                <div class="card stat-card">
-                    <p>Total Sessions Held</p>
-                    <div class="stat-number" id="totalSessions">0</div>
-                </div>
-            </div>
-
-            <h2 style="text-align:left; font-size:22px; margin-top:20px;">All Platform Users</h2>
-            <table style="margin-bottom:40px;">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Coins</th>
-                    </tr>
-                </thead>
-                <tbody id="allUsersRows"></tbody>
-            </table>
-
-            <h2 style="text-align:left; font-size:22px;">All Sessions History</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tutor</th>
-                        <th>Learner</th>
-                        <th>Skill</th>
-                        <th>Status</th>
-                        <th>Started</th>
-                    </tr>
-                </thead>
-                <tbody id="allSessionsRows"></tbody>
-            </table>
-        </div>
+      <div class="card">
+        <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-mono);">Community Trust</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--accent-give);" class="tabular-nums" id="kpiRep">5.0 ★</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="kpiSessionsCount">0 verified sessions</div>
+      </div>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+    <!-- User Action Queue -->
+    <div id="memberDashboard">
+      <!-- Section: Pending Swap Requests Requiring Action -->
+      <section style="margin-bottom: 32px;" id="pendingQueueSection">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-size: 17px; font-weight: 600;">Action Required: Pending Swap Requests</h2>
+          <span class="badge badge-pending" id="pendingQueueBadge">0 Pending</span>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <div id="pendingQueueContainer" class="card" style="padding: 0; overflow: hidden;">
+          <!-- Dynamically populated or empty state -->
         </div>
-    </footer>
+      </section>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+      <!-- Section: Active Accepted Swaps & Upcoming Sessions -->
+      <section style="margin-bottom: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-size: 17px; font-weight: 600;">Active Exchanges &amp; Scheduled Sessions</h2>
+          <a href="sessions.html" class="btn btn-secondary btn-sm">View Full Swap Inbox &rarr;</a>
+        </div>
 
-        document.getElementById("welcomeText").textContent = `Welcome back, ${user.name}!`;
+        <div id="activeSwapsContainer" class="card" style="padding: 0; overflow: hidden;">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+    </div>
 
-        if (user.role === "admin") {
-            // ----- Admin view: overview of the whole platform -----
-            document.getElementById("welcomeSubtext").textContent = "Admin overview of all SkillSwap activity.";
-            document.getElementById("adminDashboard").style.display = "block";
+    <!-- Admin Overview Section (Rendered only for role === 'admin') -->
+    <div id="adminDashboard" style="display: none;">
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">System Administration &amp; Moderation</h2>
+      
+      <div class="card" style="margin-bottom: 24px; padding: 0; overflow: hidden;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); font-weight: 600;">
+          All Registered System Users
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Timezone</th>
+              <th>Reputation</th>
+              <th>Coins</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTbody"></tbody>
+        </table>
+      </div>
+    </div>
 
-            let allUsers = getUsers();
-            let tutors = getTutors();
-            let connections = getConnections();
+  </main>
 
-            document.getElementById("totalUsers").textContent = allUsers.length;
-            document.getElementById("totalTutors").textContent = tutors.length;
-            document.getElementById("totalSessions").textContent = connections.length;
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
 
-            let allUsersRows = document.getElementById("allUsersRows");
-            allUsers.forEach((person) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><strong>${person.name}</strong></td>
-                    <td>${person.email}</td>
-                    <td><span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">${person.role}</span></td>
-                    <td><strong>🪙 ${person.coins}</strong></td>
-                `;
-                allUsersRows.appendChild(row);
-            });
+      document.getElementById("welcomeHeading").textContent = `Welcome back, ${currentUser.name}`;
+      document.getElementById("kpiCoins").textContent = `${currentUser.coins} Coins`;
+      document.getElementById("kpiRep").textContent = `${currentUser.reputation} / 5.0`;
+      document.getElementById("kpiSessionsCount").textContent = `${currentUser.sessionsCompleted || 0} completed swaps`;
 
-            let allSessionsRows = document.getElementById("allSessionsRows");
-            connections.forEach((connection) => {
-                let row = document.createElement("tr");
-                let statusBadge = connection.status === "active" 
-                    ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">Active</span>`
-                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Ended</span>`;
-                row.innerHTML = `
-                    <td>${connection.teacherName}</td>
-                    <td>${connection.learnerName}</td>
-                    <td><strong>${connection.skill}</strong></td>
-                    <td>${statusBadge}</td>
-                    <td>${connection.startedAt}</td>
-                `;
-                allSessionsRows.appendChild(row);
-            });
+      // Admin view switch
+      if (currentUser.role === "admin") {
+        document.getElementById("memberDashboard").style.display = "none";
+        document.getElementById("adminDashboard").style.display = "block";
+        loadAdminTable();
+        return;
+      }
 
-        } else if (user.role === "teacher") {
-            document.getElementById("teacherDashboard").style.display = "flex";
+      // Compute Matches
+      const matches = window.SkillSwapEngine.findMatchesForUser(currentUser.id);
+      const mutualCount = matches.filter(m => m.isMutual).length;
+      document.getElementById("kpiMatches").textContent = matches.length;
+      document.getElementById("kpiMutualMatches").textContent = `${mutualCount} mutual reciprocal`;
 
-            document.getElementById("teachCount").textContent = user.teachSkills.length;
-            document.getElementById("teacherCoinCount").textContent = user.coins;
-            document.getElementById("teacherRepCount").textContent = user.reputation;
+      // Swaps and Action Queue
+      const allSwaps = window.SkillSwapStorage.getSwaps();
+      const mySwaps = allSwaps.filter(s => s.requesterId === currentUser.id || s.recipientId === currentUser.id);
+      
+      const pendingForMe = mySwaps.filter(s => s.status === "PENDING" && s.recipientId === currentUser.id);
+      const activeSwaps = mySwaps.filter(s => s.status === "ACCEPTED" || (s.status === "PENDING" && s.requesterId === currentUser.id));
 
-            let taughtSessions = getConnections().filter(c => c.teacherId === user.id && c.status === "ended");
-            document.getElementById("taughtCount").textContent = taughtSessions.length;
+      document.getElementById("kpiActiveSwaps").textContent = activeSwaps.length;
+      document.getElementById("kpiPendingNotice").textContent = `${pendingForMe.length} awaiting your response`;
+      document.getElementById("pendingQueueBadge").textContent = `${pendingForMe.length} Action Needed`;
 
-        } else {
-            // learner
-            document.getElementById("learnerDashboard").style.display = "flex";
+      renderPendingQueue(pendingForMe);
+      renderActiveSwaps(activeSwaps);
+    });
 
-            document.getElementById("learnCount").textContent = user.learnSkills.length;
-            document.getElementById("learnerCoinCount").textContent = user.coins;
-            document.getElementById("learnerRepCount").textContent = user.reputation;
+    function renderPendingQueue(pendingList) {
+      const container = document.getElementById("pendingQueueContainer");
+      if (pendingList.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 32px; text-align: center; color: var(--text-muted);">
+            No pending swap requests requiring your response.
+          </div>
+        `;
+        return;
+      }
 
-            let attendedSessions = getConnections().filter(c => c.learnerId === user.id && c.status === "ended");
-            document.getElementById("attendedCount").textContent = attendedSessions.length;
-        }
-    </script>
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>Exchange Proposed</th>
+              <th>Note</th>
+              <th>Date</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${pendingList.map(s => {
+              const requester = window.SkillSwapStorage.getUserById(s.requesterId);
+              return `
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div class="user-avatar" style="width: 28px; height: 28px; font-size: 11px; background-color: ${requester?.avatarColor || '#388bfd'};">
+                        ${requester?.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                      <span style="font-weight: 600;">${requester?.name || 'Member'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="skill-tag highlight">${s.offeredSkill}</span>
+                    <span style="color: var(--accent); margin: 0 4px;">⇄</span>
+                    <span class="skill-tag">${s.requestedSkill}</span>
+                  </td>
+                  <td style="color: var(--text-muted); font-size: 13px; max-width: 260px;">
+                    ${s.note}
+                  </td>
+                  <td style="color: var(--text-faint); font-size: 12px;">
+                    ${new Date(s.createdAt).toLocaleDateString()}
+                  </td>
+                  <td style="text-align: right;">
+                    <div style="display: inline-flex; gap: 8px;">
+                      <button class="btn btn-accent btn-sm accept-btn" data-id="${s.id}">Accept</button>
+                      <button class="btn btn-danger btn-sm decline-btn" data-id="${s.id}">Decline</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Wire handlers
+      container.querySelectorAll(".accept-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const swapId = btn.getAttribute("data-id");
+          const currentUser = window.SkillSwapStorage.getCurrentUser();
+          try {
+            window.SkillSwapEngine.transitionSwap(swapId, "ACCEPTED", currentUser.id);
+            window.showToast("Swap accepted! Session scheduled.", "success");
+            setTimeout(() => window.location.reload(), 500);
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+
+      container.querySelectorAll(".decline-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const swapId = btn.getAttribute("data-id");
+          const currentUser = window.SkillSwapStorage.getCurrentUser();
+          try {
+            window.SkillSwapEngine.transitionSwap(swapId, "DECLINED", currentUser.id);
+            window.showToast("Swap declined.", "info");
+            setTimeout(() => window.location.reload(), 500);
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+    }
+
+    function renderActiveSwaps(activeList) {
+      const container = document.getElementById("activeSwapsContainer");
+      if (activeList.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 32px; text-align: center; color: var(--text-muted);">
+            No active exchanges right now. <a href="find-tutor.html" style="color: var(--primary); text-decoration: underline;">Request a swap</a> to get started!
+          </div>
+        `;
+        return;
+      }
+
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Partner</th>
+              <th>Skills Exchanged</th>
+              <th>Status</th>
+              <th>Scheduled Time</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${activeList.map(s => {
+              const otherId = s.requesterId === currentUser.id ? s.recipientId : s.requesterId;
+              const otherUser = window.SkillSwapStorage.getUserById(otherId);
+              const isAccepted = s.status === "ACCEPTED";
+              return `
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div class="user-avatar" style="width: 28px; height: 28px; font-size: 11px; background-color: ${otherUser?.avatarColor || '#388bfd'};">
+                        ${otherUser?.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                      <span style="font-weight: 600;">${otherUser?.name || 'Partner'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="skill-tag">${s.offeredSkill}</span>
+                    <span style="color: var(--accent); margin: 0 4px;">⇄</span>
+                    <span class="skill-tag">${s.requestedSkill}</span>
+                  </td>
+                  <td>
+                    <span class="badge badge-${s.status.toLowerCase()}">${s.status}</span>
+                  </td>
+                  <td style="color: var(--text-muted); font-size: 13px;">
+                    ${s.scheduledAt ? new Date(s.scheduledAt).toLocaleString() : 'Pending confirmation'}
+                  </td>
+                  <td style="text-align: right;">
+                    ${isAccepted ? `
+                      <a href="chat.html?swapId=${s.id}" class="btn btn-primary btn-sm">
+                        Enter Live Session &rarr;
+                      </a>
+                    ` : `
+                      <span style="color: var(--text-faint); font-size: 12px;">Waiting for partner</span>
+                    `}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function loadAdminTable() {
+      const users = window.SkillSwapStorage.getUsers();
+      const tbody = document.getElementById("adminUsersTbody");
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td style="color: var(--text-muted);">${u.email}</td>
+          <td style="color: var(--text-muted);">${u.timezone}</td>
+          <td><span class="tabular-nums">${u.reputation} / 5.0</span></td>
+          <td><span class="tabular-nums" style="color: var(--warning);">${u.coins} Coins</span></td>
+          <td><span class="badge ${u.role === 'admin' ? 'badge-mutual' : 'badge-neutral'}">${u.role}</span></td>
+        </tr>
+      `).join('');
+    }
+  </script>
 </body>
 </html>

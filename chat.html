@@ -1,167 +1,376 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Live Session</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Live 1-on-1 Collaborative Session</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+  <main class="main-content">
+    <!-- Active Swap Context Banner -->
+    <div class="card" style="margin-bottom: 20px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; background: linear-gradient(135deg, rgba(24, 32, 48, 0.6) 0%, rgba(17, 22, 34, 0.9) 100%);">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="user-avatar" id="partnerAvatar" style="width: 46px; height: 46px; font-size: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);"></div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h1 style="font-family: var(--font-serif); font-size: 22px; font-weight: 400; margin: 0; letter-spacing: -0.01em;" id="partnerName">
+              Live Collaborative Session
+            </h1>
+            <span class="badge badge-accepted" id="swapStatusBadge" style="font-family: var(--font-mono); font-size: 11px;">
+              ACTIVE
+            </span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 13px; color: var(--text-muted);" id="swapExchangeSkills">
+            Loading exchange flow...
+          </div>
+        </div>
+      </div>
 
-    <div class="container" style="width:100%; max-width:640px;">
-        <h1>Live 1-on-1 Session</h1>
-        <div id="sessionArea"></div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="btn btn-secondary btn-sm" id="swapSelectorBtn">
+          Switch Session Thread ▾
+        </button>
+        <button class="btn btn-primary btn-sm" id="completeSessionBtn" style="background: linear-gradient(135deg, var(--accent-mutual), #10b981); color: #082f23; border: none; font-weight: 600;">
+          Complete &amp; Award 40 Coins
+        </button>
+      </div>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+    <!-- Main Workspace (Chat Thread + Collaborative Notes) -->
+    <div class="chat-container">
+      <!-- 1. Real-time Message Thread -->
+      <div class="chat-thread-box">
+        <div class="chat-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--accent-mutual); box-shadow: 0 0 10px var(--accent-mutual);"></span>
+            <span style="font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em;">Dedicated Barter Studio</span>
+          </div>
+          <span style="font-size: 12px; color: var(--text-faint); font-family: var(--font-mono);" id="messageCount">0 messages</span>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <div class="chat-messages" id="chatMessages">
+          <!-- Rendered messages -->
         </div>
-    </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+        <!-- Quick Response Chips -->
+        <div style="padding: 8px 16px; background-color: var(--surface-raised); border-top: 1px solid var(--border); display: flex; gap: 8px; overflow-x: auto;">
+          <button class="skill-tag quick-chip" data-text="Ready when you are! Sharing my workspace now.">Ready to share screen</button>
+          <button class="skill-tag quick-chip" data-text="Here is the project link to inspect together.">Share project link</button>
+          <button class="skill-tag quick-chip" data-text="Great demonstration! Let us switch over to the second skill now.">Switch teaching role</button>
+        </div>
 
-        let sessionArea = document.getElementById("sessionArea");
+        <form class="chat-composer" id="chatComposer">
+          <input 
+            type="text" 
+            id="chatInput" 
+            class="input-text" 
+            placeholder="Type a message, exercise prompt, or snippet..." 
+            autocomplete="off"
+            required
+            style="border-radius: var(--radius-md);"
+          >
+          <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">Send</button>
+        </form>
+      </div>
 
-        // coins awarded when a session ends
-        let coinsForTeaching = 40;
-        let coinsForAttending = 10;
+      <!-- 2. Session Tools & Live Notes -->
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <!-- Virtual Room State & Timer -->
+        <div class="card" style="padding: 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h3 style="font-size: 14px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span>1-on-1 Call Bridge</span>
+            </h3>
+            <span class="badge" style="background: rgba(56, 189, 248, 0.12); color: var(--accent-seek); border: 1px solid rgba(56, 189, 248, 0.25); font-size: 10.5px;">
+              LOCAL P2P
+            </span>
+          </div>
 
-        function findMyActiveConnection() {
-            let connections = getConnections();
-            return connections.find((c) => {
-                return c.status === "active" && (c.teacherId === user.id || c.learnerId === user.id);
-            });
+          <div style="background-color: var(--ground); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; text-align: center; margin-bottom: 14px; position: relative;">
+            <div style="font-size: 11px; color: var(--accent-mutual); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+              • Bilateral Audio/Video Active
+            </div>
+            <div style="font-size: 28px; font-weight: 700; color: var(--text); font-family: var(--font-mono); letter-spacing: 0.02em;" class="tabular-nums" id="sessionTimer">
+              42:15
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+              Reciprocal split: 30m offered / 30m received
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="width: 100%;" id="launchMockVideoBtn">
+            Open Interactive Whiteboard
+          </button>
+        </div>
+
+        <!-- Shared Scratchpad -->
+        <div class="card" style="flex: 1; display: flex; flex-direction: column; padding: 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h3 style="font-size: 14px; font-weight: 600; margin: 0;">Shared Session Scratchpad</h3>
+            <span style="font-size: 11px; color: var(--text-faint); font-family: var(--font-mono);" id="saveStatus">Auto-saved</span>
+          </div>
+          <textarea 
+            id="sessionScratchpad" 
+            class="input-textarea" 
+            style="flex: 1; min-height: 220px; resize: none; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; background-color: var(--ground);"
+            placeholder="// Paste code snippets, design links, guitar chord progressions, or exercise notes here during your call..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Swap Selector Dialog -->
+    <div class="modal-backdrop" id="swapSelectorModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Select Swap Session</h3>
+          <button class="modal-close" id="closeSelectorBtn">&times;</button>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Switch the live room context to another pending or accepted swap thread.
+        </p>
+        <div id="swapChoicesList" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- List of swaps -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    let activeSwap = null;
+    let timerSeconds = 42 * 60 + 15;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Check query params for swapId or take first active
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramSwapId = urlParams.get("swapId");
+      
+      const allSwaps = window.SkillSwapStorage.getSwaps();
+      const mySwaps = allSwaps.filter(s => s.requesterId === currentUser.id || s.recipientId === currentUser.id);
+
+      if (paramSwapId) {
+        activeSwap = mySwaps.find(s => s.id === paramSwapId);
+      }
+      if (!activeSwap) {
+        // Fallback to first ACCEPTED or PENDING swap
+        activeSwap = mySwaps.find(s => s.status === "ACCEPTED") || mySwaps[0];
+      }
+
+      if (!activeSwap) {
+        alert("You have no active swap sessions yet. Propose a swap from the Matches page first!");
+        window.location.href = "find-tutor.html";
+        return;
+      }
+
+      setupRoom();
+      setupChat();
+      setupTimer();
+      setupScratchpad();
+
+      // Complete button
+      document.getElementById("completeSessionBtn").addEventListener("click", () => {
+        try {
+          window.SkillSwapEngine.transitionSwap(activeSwap.id, "COMPLETED", currentUser.id);
+          window.showToast("Session marked COMPLETED! +40 Skill Coins credited.", "success");
+          setTimeout(() => {
+            window.location.href = `sessions.html`;
+          }, 800);
+        } catch (e) {
+          window.showToast(e.message, "error");
         }
+      });
 
-        function render() {
-            if (user.role === "admin") {
-                sessionArea.innerHTML = `<p style="color:#64748b; margin-top:20px;">Admins don't take part in sessions.</p>`;
-                return;
-            }
-
-            let connection = findMyActiveConnection();
-
-            if (!connection) {
-                let helpText = user.role === "teacher"
-                    ? "No active session right now. Waiting for a learner to click \"Get Connected\" on your tutor profile."
-                    : "No active session right now. Visit Find Tutor and click \"Get Connected\" to start one.";
-                sessionArea.innerHTML = `<p style="color:#64748b; margin-top:20px; font-weight:500;">${helpText}</p>`;
-                return;
-            }
-
-            let otherPersonName = user.role === "teacher" ? connection.learnerName : connection.teacherName;
-
-            sessionArea.innerHTML = `
-                <div class="card" style="text-align:center; padding:44px 32px; border-radius:18px; margin-top:20px;">
-                    <div style="width:64px; height:64px; border-radius:50%; background:#eff6ff; color:#2563eb; font-size:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">🤝</div>
-                    <h3 style="font-size:1.4rem;">Connected with ${otherPersonName}</h3>
-                    <p style="color:#64748b; margin:8px 0 28px;">Live collaborative session on <strong>${connection.skill}</strong></p>
-                    <button class="btn btn-danger" id="endBtn" style="padding:12px 28px; font-size:1rem;">End Session &amp; Collect Coins</button>
-                </div>
-            `;
-
-            document.getElementById("endBtn").addEventListener("click", () => {
-                endSession(connection);
-            });
-        }
-
-        function endSession(connection) {
-            let connections = getConnections();
-            let target = connections.find(c => c.id === connection.id);
-            if (!target) return;
-
-            target.status = "ended";
-            target.endedAt = new Date().toLocaleString();
-            saveConnections(connections);
-
-            // award coins to both participants by updating their profiles directly
-            let allUsers = getUsers();
-            let teacher = allUsers.find(u => u.id === target.teacherId);
-            let learner = allUsers.find(u => u.id === target.learnerId);
-
-            if (teacher) {
-                teacher.coins += coinsForTeaching;
-                teacher.coinHistory.push({
-                    desc: `Taught ${target.skill} to ${target.learnerName}`,
-                    amount: coinsForTeaching,
-                    date: new Date().toLocaleDateString()
-                });
-            }
-
-            if (learner) {
-                learner.coins += coinsForAttending;
-                learner.coinHistory.push({
-                    desc: `Attended ${target.skill} session with ${target.teacherName}`,
-                    amount: coinsForAttending,
-                    date: new Date().toLocaleDateString()
-                });
-            }
-
-            saveUsers(allUsers);
-
-            let myCoins = user.role === "teacher" ? coinsForTeaching : coinsForAttending;
-            alert(`Session ended! You earned ${myCoins} coins.`);
-
-            render();
-        }
-
-        render();
-
-        // keep both tabs in sync as the session starts / ends
-        window.addEventListener("storage", (e) => {
-            if (e.key === "connections") {
-                render();
-            }
+      // Quick chips
+      document.querySelectorAll(".quick-chip").forEach(c => {
+        c.addEventListener("click", () => {
+          document.getElementById("chatInput").value = c.getAttribute("data-text");
+          document.getElementById("chatInput").focus();
         });
-    </script>
+      });
+
+      // Swap switcher
+      document.getElementById("swapSelectorBtn").addEventListener("click", () => {
+        const modal = document.getElementById("swapSelectorModal");
+        const list = document.getElementById("swapChoicesList");
+        list.innerHTML = mySwaps.map(s => {
+          const otherId = s.requesterId === currentUser.id ? s.recipientId : s.requesterId;
+          const other = window.SkillSwapStorage.getUserById(otherId);
+          return `
+            <a href="chat.html?swapId=${s.id}" class="card" style="padding: 14px; display: block; border-color: ${s.id === activeSwap.id ? 'var(--border-focus)' : 'var(--border)'}; text-decoration: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: var(--text);">With ${other?.name || 'Partner'}</span>
+                <span class="badge badge-${s.status.toLowerCase()}">${s.status}</span>
+              </div>
+              <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+                <span class="skill-tag give" style="font-size: 11px; padding: 2px 6px;">${s.offeredSkill}</span>
+                <span>⇄</span>
+                <span class="skill-tag seek" style="font-size: 11px; padding: 2px 6px;">${s.requestedSkill}</span>
+              </div>
+            </a>
+          `;
+        }).join('');
+        modal.classList.add("active");
+      });
+
+      document.getElementById("closeSelectorBtn").addEventListener("click", () => {
+        document.getElementById("swapSelectorModal").classList.remove("active");
+      });
+
+      document.getElementById("launchMockVideoBtn").addEventListener("click", () => {
+        window.showToast("Virtual audio/video room connected in local mode.", "info");
+      });
+    });
+
+    function setupRoom() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const otherId = activeSwap.requesterId === currentUser.id ? activeSwap.recipientId : activeSwap.requesterId;
+      const otherUser = window.SkillSwapStorage.getUserById(otherId);
+
+      document.getElementById("partnerName").textContent = `Session with ${otherUser?.name || 'Partner'}`;
+      document.getElementById("swapStatusBadge").textContent = activeSwap.status;
+      document.getElementById("swapStatusBadge").className = `badge badge-${activeSwap.status.toLowerCase()}`;
+      document.getElementById("swapExchangeSkills").innerHTML = `
+        <span style="color: var(--text-faint);">Bilateral Flow:</span>
+        <span class="skill-tag give" style="font-size: 11.5px; padding: 2px 8px;">${activeSwap.offeredSkill}</span>
+        <span style="color: var(--accent-mutual); font-weight: 700;">⇄</span>
+        <span class="skill-tag seek" style="font-size: 11.5px; padding: 2px 8px;">${activeSwap.requestedSkill}</span>
+      `;
+
+      const avatar = document.getElementById("partnerAvatar");
+      avatar.style.backgroundColor = otherUser?.avatarColor || "#e07a5f";
+      avatar.textContent = otherUser?.name.split(" ").map(n => n[0]).join("");
+    }
+
+    function setupChat() {
+      renderMessages();
+
+      const form = document.getElementById("chatComposer");
+      const input = document.getElementById("chatInput");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        const currentUser = window.SkillSwapStorage.getCurrentUser();
+        window.SkillSwapStorage.addMessage(
+          activeSwap.id,
+          currentUser.id,
+          currentUser.name,
+          text
+        );
+
+        input.value = "";
+        renderMessages();
+
+        // Simulate simulated auto-reply if talking to a demo persona and no real other tab
+        simulateAutoReply(text);
+      });
+    }
+
+    function renderMessages() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const messages = window.SkillSwapStorage.getMessages(activeSwap.id);
+      const container = document.getElementById("chatMessages");
+
+      document.getElementById("messageCount").textContent = `${messages.length} messages`;
+
+      if (messages.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-faint); margin: auto; font-size: 13.5px; padding: 32px 16px;">
+            <div style="font-size: 28px; margin-bottom: 8px;">⇄</div>
+            No messages yet. Send a greeting to kick off your reciprocal learning session!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = messages.map(m => {
+        const isMine = m.senderId === currentUser.id;
+        return `
+          <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
+            <div style="font-weight: 600; font-size: 11.5px; margin-bottom: 4px; color: ${isMine ? 'var(--accent-seek)' : 'var(--accent-give)'};">
+              ${isMine ? 'You' : m.senderName}
+            </div>
+            <div>${escapeHtml(m.body)}</div>
+            <div class="chat-meta">
+              ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    let replyTimer = null;
+    function simulateAutoReply(lastMsg) {
+      clearTimeout(replyTimer);
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const otherId = activeSwap.requesterId === currentUser.id ? activeSwap.recipientId : activeSwap.requesterId;
+      const otherUser = window.SkillSwapStorage.getUserById(otherId);
+
+      // Automated helpful contextual response
+      replyTimer = setTimeout(() => {
+        const replies = [
+          `Got it! Let's examine the core concepts and jump into practical examples.`,
+          `Sounds great, I'm ready to demonstrate this part!`,
+          `Understood! When you're ready, we can switch over and cover the second skill.`
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+        window.SkillSwapStorage.addMessage(
+          activeSwap.id,
+          otherUser.id,
+          otherUser.name,
+          randomReply
+        );
+        renderMessages();
+      }, 1400);
+    }
+
+    function setupTimer() {
+      setInterval(() => {
+        timerSeconds++;
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        document.getElementById("sessionTimer").textContent = 
+          `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function setupScratchpad() {
+      const padKey = `scratchpad_${activeSwap.id}`;
+      const saved = localStorage.getItem(padKey);
+      const pad = document.getElementById("sessionScratchpad");
+      if (saved) pad.value = saved;
+
+      pad.addEventListener("input", () => {
+        localStorage.setItem(padKey, pad.value);
+        document.getElementById("saveStatus").textContent = "Saving...";
+        setTimeout(() => {
+          document.getElementById("saveStatus").textContent = "Auto-saved";
+        }, 500);
+      });
+    }
+  </script>
 </body>
 </html>

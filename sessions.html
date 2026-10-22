@@ -1,147 +1,464 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - My Sessions</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap — Swap Inbox &amp; State Machine</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .pipeline-tabs-wrapper {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 24px;
+    }
+
+    .pipeline-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .pipeline-tab:hover {
+      color: var(--text);
+      background-color: var(--surface-raised);
+      border-color: var(--border-hover);
+    }
+
+    .pipeline-tab.active {
+      color: var(--text);
+      background-color: var(--surface-raised);
+      border-color: var(--primary);
+      box-shadow: 0 0 16px -4px rgba(56, 189, 248, 0.25);
+    }
+
+    .pipeline-tab .count {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background-color: var(--ground);
+      color: var(--text-faint);
+      font-family: var(--font-mono);
+    }
+
+    .pipeline-tab.active .count {
+      color: var(--primary);
+    }
+
+    /* Lifecycle Step Meter */
+    .swap-stage-meter {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      margin-top: 6px;
+    }
+
+    .stage-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--rule);
+    }
+
+    .stage-dot.active {
+      background-color: var(--accent-mutual);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
+  <main class="main-content">
+
+    <!-- Page Editorial Header -->
+    <header style="padding: 24px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div class="badge badge-seek" style="margin-bottom: 10px;">
+          ⇄ State Machine Lifecycle
+        </div>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px;">
+          Swap Inbox &amp; Agreements
+        </h1>
+        <p style="color: var(--text-muted); font-size: 14.5px; max-width: 620px; line-height: 1.6; margin: 0;">
+          Manage your bilateral barter agreements. Transition requests through verified stages: <code>PENDING ➔ ACCEPTED ➔ COMPLETED</code>.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="find-tutor.html" class="btn btn-primary btn-sm">
+          + Propose New Barter &rarr;
+        </a>
+      </div>
     </header>
 
-    <div class="container">
-        <h1>My Sessions</h1>
-        <p style="color:#64748b; margin-bottom:24px;">Your complete history of collaborative learning and teaching sessions.</p>
-
-        <table>
-            <thead>
-                <tr>
-                    <th id="otherPersonHeader">With</th>
-                    <th>Skill</th>
-                    <th>Status</th>
-                    <th>Coins Earned</th>
-                    <th>Started</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="sessionRows"></tbody>
-        </table>
-        <p id="noSessions" style="display:none; margin-top:24px; color:#64748b; font-weight:500;">You have no sessions yet.</p>
+    <!-- State Machine Pipeline Tabs -->
+    <div class="pipeline-tabs-wrapper" id="pipelineTabs">
+      <button class="pipeline-tab active" data-status="ALL">
+        All Agreements <span class="count" id="countAll">0</span>
+      </button>
+      <button class="pipeline-tab" data-status="PENDING">
+        Pending <span class="count" id="countPending">0</span>
+      </button>
+      <button class="pipeline-tab" data-status="ACCEPTED">
+        Accepted &amp; Active <span class="count" id="countAccepted">0</span>
+      </button>
+      <button class="pipeline-tab" data-status="COMPLETED">
+        Completed <span class="count" id="countCompleted">0</span>
+      </button>
+      <button class="pipeline-tab" data-status="CANCELLED">
+        Declined / Cancelled <span class="count" id="countCancelled">0</span>
+      </button>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+    <!-- Swaps Table Container -->
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
+      <table id="swapsTable">
+        <thead>
+          <tr>
+            <th>Barter Partner</th>
+            <th>Bilateral Exchange</th>
+            <th>Lifecycle Stage</th>
+            <th>Role</th>
+            <th>Scheduled Time</th>
+            <th style="text-align: right;">State Actions</th>
+          </tr>
+        </thead>
+        <tbody id="swapsTbody">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+      <div id="noSwapsMessage" style="display: none; padding: 56px 24px; text-align: center; color: var(--text-muted);">
+        <div style="font-size: 28px; margin-bottom: 10px;">📋</div>
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px;">No agreements found</h3>
+        <p style="font-size: 13.5px; margin-bottom: 18px;">You currently have no barter proposals in this pipeline filter.</p>
+        <a href="find-tutor.html" class="btn btn-secondary btn-sm">Explore Compatible Mentors</a>
+      </div>
+    </div>
+
+    <!-- Post-Session Review & Endorsement Modal -->
+    <div class="modal-backdrop" id="reviewModalBackdrop">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border);">
+          <div>
+            <span class="badge badge-mutual" style="margin-bottom: 6px;">Trust &amp; Verification</span>
+            <h3 style="font-size: 19px; font-weight: 700; margin: 0;">Leave Peer Review</h3>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="closeReviewModalBtn" style="font-size: 20px; line-height: 1; padding: 4px 8px;">&times;</button>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
-        </div>
-    </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+        <form id="reviewForm">
+          <input type="hidden" id="reviewSwapId">
+          <input type="hidden" id="reviewRevieweeId">
 
-        let sessionRows = document.getElementById("sessionRows");
-        let noSessions = document.getElementById("noSessions");
-        let coinsForTeaching = 40;
-        let coinsForAttending = 10;
+          <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 20px; line-height: 1.5;">
+            Rate your 1-on-1 reciprocal knowledge exchange with <strong id="reviewRevieweeName" style="color: var(--text);">Partner</strong>. Your rating awards permanent community reputation points.
+          </p>
 
-        if (user.role === "teacher") {
-            document.getElementById("otherPersonHeader").textContent = "Learner";
+          <div class="form-group">
+            <label class="form-label">Rating Score (1.0 to 5.0 Stars)</label>
+            <select class="form-control" id="reviewRatingSelect" required>
+              <option value="5">5.0 ★ — Outstanding Mentor &amp; Collaborator</option>
+              <option value="4">4.0 ★ — Great Knowledge Exchange</option>
+              <option value="3">3.0 ★ — Satisfactory Session</option>
+              <option value="2">2.0 ★ — Needs Preparation</option>
+              <option value="1">1.0 ★ — Poor Reliability</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Detailed Feedback &amp; Endorsement</label>
+            <textarea class="form-control" id="reviewCommentInput" rows="3" placeholder="What key insights did you learn? How clear was their teaching style?" required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" id="cancelReviewBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit Peer Review &rarr;</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script src="studio-fx.js"></script>
+  <script>
+    let activeFilter = "ALL";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderNavbar();
+
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      loadSwaps();
+
+      // Tab filters
+      document.querySelectorAll(".pipeline-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".pipeline-tab").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          activeFilter = tab.getAttribute("data-status");
+          renderSwaps();
+        });
+      });
+
+      // Review Modal bindings
+      document.getElementById("closeReviewModalBtn").addEventListener("click", closeReviewModal);
+      document.getElementById("cancelReviewBtn").addEventListener("click", closeReviewModal);
+      document.getElementById("reviewForm").addEventListener("submit", handleReviewSubmit);
+    });
+
+    function loadSwaps() {
+      updateTabCounts();
+      renderSwaps();
+    }
+
+    function updateTabCounts() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const all = window.SkillSwapStorage.getSwapsForUser(currentUser.id);
+
+      document.getElementById("countAll").textContent = all.length;
+      document.getElementById("countPending").textContent = all.filter(s => s.status === "PENDING").length;
+      document.getElementById("countAccepted").textContent = all.filter(s => s.status === "ACCEPTED").length;
+      document.getElementById("countCompleted").textContent = all.filter(s => s.status === "COMPLETED").length;
+      document.getElementById("countCancelled").textContent = all.filter(s => s.status === "CANCELLED" || s.status === "DECLINED").length;
+    }
+
+    function renderSwaps() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const mySwaps = window.SkillSwapStorage.getSwapsForUser(currentUser.id);
+      const tbody = document.getElementById("swapsTbody");
+      const noSwaps = document.getElementById("noSwapsMessage");
+
+      let filtered = mySwaps;
+      if (activeFilter === "PENDING") filtered = mySwaps.filter(s => s.status === "PENDING");
+      else if (activeFilter === "ACCEPTED") filtered = mySwaps.filter(s => s.status === "ACCEPTED");
+      else if (activeFilter === "COMPLETED") filtered = mySwaps.filter(s => s.status === "COMPLETED");
+      else if (activeFilter === "CANCELLED") filtered = mySwaps.filter(s => s.status === "CANCELLED" || s.status === "DECLINED");
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = "";
+        noSwaps.style.display = "block";
+        return;
+      }
+
+      noSwaps.style.display = "none";
+      tbody.innerHTML = filtered.map(s => {
+        const isRequester = s.requesterId === currentUser.id;
+        const otherId = isRequester ? s.recipientId : s.requesterId;
+        const otherUser = window.SkillSwapStorage.getUserById(otherId);
+
+        // Check review state
+        const existingReviews = window.SkillSwapStorage.getReviews().filter(r => r.swapRequestId === s.id && r.reviewerId === currentUser.id);
+        const hasReviewed = existingReviews.length > 0;
+
+        const youGive = isRequester ? s.offeredSkill : s.requestedSkill;
+        const youReceive = isRequester ? s.requestedSkill : s.offeredSkill;
+
+        return `
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="user-avatar" style="width: 36px; height: 36px; font-size: 13px; background-color: ${otherUser?.avatarColor || '#388bfd'};">
+                  ${otherUser?.name.split(" ").map(n => n[0]).join("")}
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 14px;">${otherUser?.name || 'Partner'}</div>
+                  <div style="font-size: 11.5px; color: var(--text-faint);">${otherUser?.timezone}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span class="skill-tag give" style="font-size: 11.5px;">Give: ${youGive}</span>
+                <span style="color: var(--accent-mutual); font-weight: 700;">⇄</span>
+                <span class="skill-tag seek" style="font-size: 11.5px;">Receive: ${youReceive}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill status-${s.status.toLowerCase()}">${s.status}</span>
+              <div class="swap-stage-meter" title="Lifecycle state progression">
+                <span class="stage-dot ${s.status === 'PENDING' || s.status === 'ACCEPTED' || s.status === 'COMPLETED' ? 'active' : ''}"></span>
+                <span class="stage-dot ${s.status === 'ACCEPTED' || s.status === 'COMPLETED' ? 'active' : ''}"></span>
+                <span class="stage-dot ${s.status === 'COMPLETED' ? 'active' : ''}"></span>
+              </div>
+            </td>
+            <td style="font-size: 12.5px; color: var(--text-muted); font-family: var(--font-mono);">
+              ${isRequester ? 'Requester (Sent)' : 'Recipient (Received)'}
+            </td>
+            <td style="font-size: 12.5px; color: var(--text-muted);">
+              ${s.scheduledAt ? new Date(s.scheduledAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Not yet scheduled'}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px; align-items: center;">
+                ${renderActionButtons(s, isRequester, hasReviewed, otherUser)}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      wireActionHandlers();
+    }
+
+    function renderActionButtons(swap, isRequester, hasReviewed, otherUser) {
+      if (swap.status === "PENDING") {
+        if (!isRequester) {
+          // Recipient can Accept or Decline
+          return `
+            <button class="btn btn-primary btn-sm act-accept" data-id="${swap.id}">Accept ⇄</button>
+            <button class="btn btn-secondary btn-sm act-decline" data-id="${swap.id}">Decline</button>
+          `;
         } else {
-            document.getElementById("otherPersonHeader").textContent = "Tutor";
+          // Requester can Cancel
+          return `
+            <button class="btn btn-secondary btn-sm act-cancel" data-id="${swap.id}">Cancel Request</button>
+          `;
         }
+      }
 
-        function displaySessions() {
-            if (user.role === "admin") {
-                noSessions.textContent = "Admins don't have sessions. Visit the Dashboard for a full overview.";
-                noSessions.style.display = "block";
-                return;
-            }
+      if (swap.status === "ACCEPTED") {
+        return `
+          <a href="chat.html?swapId=${swap.id}" class="btn btn-primary btn-sm">Enter Live Barter ⇄</a>
+          <button class="btn btn-secondary btn-sm act-complete" data-id="${swap.id}" style="color: var(--accent-mutual); border-color: var(--accent-mutual-border);">
+            Mark Complete &amp; Award Coins
+          </button>
+        `;
+      }
 
-            let connections = getConnections();
-            let myConnections = connections.filter((c) => {
-                return user.role === "teacher" ? c.teacherId === user.id : c.learnerId === user.id;
-            });
-
-            sessionRows.innerHTML = "";
-
-            if (myConnections.length === 0) {
-                noSessions.textContent = "You have no sessions yet.";
-                noSessions.style.display = "block";
-                return;
-            }
-            noSessions.style.display = "none";
-
-            myConnections.forEach((connection) => {
-                let otherPersonName = user.role === "teacher" ? connection.learnerName : connection.teacherName;
-                let coinsEarned = connection.status === "ended"
-                    ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">🪙 +${user.role === "teacher" ? coinsForTeaching : coinsForAttending}</span>`
-                    : `<span style="color:#94a3b8;">Pending</span>`;
-                let statusBadge = connection.status === "active"
-                    ? `<span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">🟢 Active</span>`
-                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Completed</span>`;
-                let actionCell = connection.status === "active"
-                    ? `<a href="chat.html" class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;">Continue &rarr;</a>`
-                    : `<span style="color:#94a3b8;">-</span>`;
-
-                let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><strong>${otherPersonName}</strong></td>
-                    <td><strong>${connection.skill}</strong></td>
-                    <td>${statusBadge}</td>
-                    <td>${coinsEarned}</td>
-                    <td style="color:#64748b;">${connection.startedAt}</td>
-                    <td>${actionCell}</td>
-                `;
-                sessionRows.appendChild(row);
-            });
+      if (swap.status === "COMPLETED") {
+        if (!hasReviewed) {
+          return `
+            <button class="btn btn-secondary btn-sm act-review" data-id="${swap.id}" data-user-id="${otherUser?.id}" data-user-name="${otherUser?.name}">
+              Leave Review ★
+            </button>
+          `;
+        } else {
+          return `<span class="badge badge-coin">Verified &bull; +40 Coins</span>`;
         }
+      }
 
-        displaySessions();
-    </script>
+      return `<span style="color: var(--text-faint); font-size: 12px; font-family: var(--font-mono);">Archived</span>`;
+    }
+
+    function wireActionHandlers() {
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+
+      document.querySelectorAll(".act-accept").forEach(b => {
+        b.addEventListener("click", () => {
+          const id = b.getAttribute("data-id");
+          try {
+            window.SkillSwapEngine.transitionSwap(id, "ACCEPTED", currentUser.id);
+            window.showToast("Barter proposal accepted! Session scheduled.", "success");
+            loadSwaps();
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+
+      document.querySelectorAll(".act-decline").forEach(b => {
+        b.addEventListener("click", () => {
+          const id = b.getAttribute("data-id");
+          try {
+            window.SkillSwapEngine.transitionSwap(id, "DECLINED", currentUser.id);
+            window.showToast("Swap proposal declined.", "info");
+            loadSwaps();
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+
+      document.querySelectorAll(".act-cancel").forEach(b => {
+        b.addEventListener("click", () => {
+          const id = b.getAttribute("data-id");
+          try {
+            window.SkillSwapEngine.transitionSwap(id, "CANCELLED", currentUser.id);
+            window.showToast("Swap request cancelled.", "info");
+            loadSwaps();
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+
+      document.querySelectorAll(".act-complete").forEach(b => {
+        b.addEventListener("click", () => {
+          const id = b.getAttribute("data-id");
+          try {
+            window.SkillSwapEngine.transitionSwap(id, "COMPLETED", currentUser.id);
+            window.showToast("Session completed! +40 Skill Coins awarded to both participants.", "success");
+            loadSwaps();
+            renderNavbar(); // update coin pill in header
+          } catch (e) {
+            window.showToast(e.message, "error");
+          }
+        });
+      });
+
+      document.querySelectorAll(".act-review").forEach(b => {
+        b.addEventListener("click", () => {
+          const swapId = b.getAttribute("data-id");
+          const targetUserId = b.getAttribute("data-user-id");
+          const targetUserName = b.getAttribute("data-user-name");
+
+          document.getElementById("reviewSwapId").value = swapId;
+          document.getElementById("reviewRevieweeId").value = targetUserId;
+          document.getElementById("reviewRevieweeName").textContent = targetUserName;
+          document.getElementById("reviewCommentInput").value = "";
+          document.getElementById("reviewModalBackdrop").classList.add("active");
+        });
+      });
+    }
+
+    function closeReviewModal() {
+      document.getElementById("reviewModalBackdrop").classList.remove("active");
+    }
+
+    function handleReviewSubmit(e) {
+      e.preventDefault();
+      const currentUser = window.SkillSwapStorage.getCurrentUser();
+      const swapId = document.getElementById("reviewSwapId").value;
+      const revieweeId = document.getElementById("reviewRevieweeId").value;
+      const rating = parseFloat(document.getElementById("reviewRatingSelect").value);
+      const comment = document.getElementById("reviewCommentInput").value;
+
+      try {
+        window.SkillSwapStorage.addReview({
+          swapRequestId: swapId,
+          reviewerId: currentUser.id,
+          revieweeId,
+          rating,
+          comment
+        });
+
+        closeReviewModal();
+        window.showToast("Review submitted successfully! Reputation updated.", "success");
+        loadSwaps();
+      } catch (err) {
+        window.showToast(err.message, "error");
+      }
+    }
+  </script>
 </body>
 </html>

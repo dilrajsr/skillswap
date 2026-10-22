@@ -1,145 +1,109 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Login</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Sign In to Your Studio</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: radial-gradient(circle at 50% 20%, rgba(224, 122, 95, 0.05) 0%, transparent 60%), var(--ground);">
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container">
-        <form id="loginForm" class="form-box">
-            <h1>Welcome Back</h1>
-            <p style="text-align:center; color:#64748b; margin-top:-15px; margin-bottom:24px; font-size:14px;">Sign in to your SkillSwap account</p>
-
-            <label for="email">Email Address</label>
-            <input type="text" id="email" placeholder="name@example.com">
-
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password">
-            <p class="error-msg" id="errorMsg"></p>
-
-            <button type="submit" class="btn btn-primary">Sign In</button>
-            <p style="text-align:center; margin-top:20px; font-size:14px; color:#64748b;">
-                Don't have an account? <a href="register.html" style="color:#2563eb; font-weight:600;">Register here</a>
-            </p>
-        </form>
-
-        <div id="roleSelectBox" class="form-box" style="display:none; text-align:center;">
-            <h1>Choose a Profile</h1>
-            <p style="color:#64748b; margin-bottom:20px;">This email has more than one profile. Continue as:</p>
-            <div id="roleButtons" style="display:flex; flex-direction:column; gap:12px;"></div>
-        </div>
+  <div style="max-width: 460px; width: 100%;">
+    <!-- Brand Mark Header -->
+    <div style="text-align: center; margin-bottom: 28px;">
+      <a href="index.html" class="brand" style="justify-content: center; margin-bottom: 16px; text-decoration: none;">
+        <div class="brand-icon" style="animation: knotPulse 4s infinite ease-in-out;">⇄</div>
+        <span class="brand-name" style="font-size: 20px;">Skill<span>Swap</span></span>
+      </a>
+      <h1 style="font-family: var(--font-serif); font-size: 32px; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 8px;">
+        Return to the <em>Barter Studio</em>
+      </h1>
+      <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">
+        Continue exchanging craft, conducting 1-on-1 sessions, and building reciprocal reputation.
+      </p>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+    <!-- Login Card -->
+    <div class="card" style="margin-bottom: 20px; padding: 28px;">
+      <form id="loginForm">
+        <div class="input-group">
+          <label class="input-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="input-text" placeholder="name@example.com" required autocomplete="email">
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <div class="input-group">
+          <label class="input-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="input-text" placeholder="Enter your password" required autocomplete="current-password">
         </div>
-    </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let form = document.getElementById("loginForm");
-        let errorMsg = document.getElementById("errorMsg");
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px; padding: 12px;">
+          Sign In to Account
+        </button>
+      </form>
+    </div>
 
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
+    <!-- Curated Demo Practitioners Roster -->
+    <div class="card" style="background-color: var(--surface-raised); border-color: rgba(255,255,255,0.06); padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--accent-seek); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono);">
+          1-Click Demo Profiles
+        </span>
+        <span style="font-size: 11px; color: var(--text-faint);">Instant login</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;" id="demoList">
+        <button class="btn btn-secondary btn-sm demo-btn" data-email="alex@example.com" data-pass="password123" style="justify-content: flex-start; text-align: left; padding: 10px 12px;">
+          <span style="color: var(--accent-give); font-size: 13px;">●</span>
+          <span style="flex: 1; font-size: 13px;"><strong>Alex Chen</strong> &bull; Systems (Python, React)</span>
+        </button>
+        <button class="btn btn-secondary btn-sm demo-btn" data-email="elena@example.com" data-pass="password123" style="justify-content: flex-start; text-align: left; padding: 10px 12px;">
+          <span style="color: var(--accent-seek); font-size: 13px;">●</span>
+          <span style="flex: 1; font-size: 13px;"><strong>Elena Rostova</strong> &bull; Music (Guitar, Spanish)</span>
+        </button>
+        <button class="btn btn-secondary btn-sm demo-btn" data-email="marcus@example.com" data-pass="password123" style="justify-content: flex-start; text-align: left; padding: 10px 12px;">
+          <span style="color: var(--coin-gold); font-size: 13px;">●</span>
+          <span style="flex: 1; font-size: 13px;"><strong>Marcus Vance</strong> &bull; Design (Figma, Brand)</span>
+        </button>
+        <button class="btn btn-secondary btn-sm demo-btn" data-email="admin@skillswap.com" data-pass="adminpassword" style="justify-content: flex-start; text-align: left; padding: 10px 12px;">
+          <span style="color: var(--accent-mutual); font-size: 13px;">●</span>
+          <span style="flex: 1; font-size: 13px;"><strong>Platform Admin</strong> &bull; Protocol Oversight</span>
+        </button>
+      </div>
+    </div>
 
-            let email = document.getElementById("email").value.trim();
-            let password = document.getElementById("password").value;
+    <div style="text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--text-muted);">
+      New to peer skill exchange? <a href="register.html" style="color: var(--accent-seek); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;">Register account &rarr;</a>
+    </div>
+  </div>
 
-            // The admin account is hardcoded and cannot be registered by anyone
-            if (email === ADMIN_USER.email && password === ADMIN_USER.password) {
-                sessionStorage.setItem("currentUserId", ADMIN_USER.id);
-                window.location.href = "dashboard.html";
-                return;
-            }
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("loginEmail");
+      const passInput = document.getElementById("loginPassword");
 
-            let users = getUsers();
-            let matches = users.filter(u => u.email === email && u.password === password);
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        try {
+          window.SkillSwapEngine.login(emailInput.value.trim(), passInput.value);
+          window.showToast("Welcome back! Signed in successfully.", "success");
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 300);
+        } catch (err) {
+          window.showToast(err.message, "error");
+        }
+      });
 
-            if (matches.length === 0) {
-                errorMsg.textContent = "Invalid email or password.";
-                errorMsg.style.display = "block";
-                return;
-            }
-
-            errorMsg.style.display = "none";
-
-            if (matches.length === 1) {
-                // only one profile for this email - log straight in
-                sessionStorage.setItem("currentUserId", matches[0].id);
-                window.location.href = "dashboard.html";
-                return;
-            }
-
-            // more than one profile matched (e.g. this email has both a
-            // Teacher profile and a Learner profile) - let the user pick one
-            form.style.display = "none";
-            let roleSelectBox = document.getElementById("roleSelectBox");
-            let roleButtons = document.getElementById("roleButtons");
-            roleSelectBox.style.display = "block";
-            roleButtons.innerHTML = "";
-
-            matches.forEach((matchedProfile) => {
-                let roleLabel = matchedProfile.role.charAt(0).toUpperCase() + matchedProfile.role.slice(1);
-                let btn = document.createElement("button");
-                btn.className = "btn btn-primary";
-                btn.textContent = `Continue as ${roleLabel}`;
-                btn.addEventListener("click", () => {
-                    sessionStorage.setItem("currentUserId", matchedProfile.id);
-                    window.location.href = "dashboard.html";
-                });
-                roleButtons.appendChild(btn);
-            });
+      document.querySelectorAll(".demo-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          emailInput.value = btn.getAttribute("data-email");
+          passInput.value = btn.getAttribute("data-pass");
+          form.dispatchEvent(new Event("submit"));
         });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>

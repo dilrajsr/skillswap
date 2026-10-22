@@ -1,172 +1,109 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Register</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Join the Reciprocal Network</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 60%), var(--ground);">
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container">
-        <form id="registerForm" class="form-box">
-            <h1>Create Account</h1>
-            <p style="text-align:center; color:#64748b; margin-top:-15px; margin-bottom:24px; font-size:14px;">Join the peer-to-peer skill community</p>
-
-            <label for="name">Full Name</label>
-            <input type="text" id="name" placeholder="John Doe">
-
-            <label for="email">Email Address</label>
-            <input type="text" id="email" placeholder="name@example.com">
-
-            <label for="password">Password (min 6 characters)</label>
-            <input type="password" id="password" placeholder="Create a secure password">
-
-            <label>I want to join as a...</label>
-            <div style="display:flex; gap:20px; margin-bottom:15px; font-size:14px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
-                <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; margin-bottom:0;">
-                    <input type="radio" name="role" value="learner" checked style="width:auto; margin:0;"> 🎓 Learner
-                </label>
-                <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; margin-bottom:0;">
-                    <input type="radio" name="role" value="teacher" style="width:auto; margin:0;"> 👨‍🏫 Teacher
-                </label>
-            </div>
-            <p style="font-size:12.5px; color:#64748b; margin-top:-6px; margin-bottom:18px;">
-                💡 <em>Tip: You can register twice with the same email to have both a Teacher and Learner profile!</em>
-            </p>
-
-            <p class="error-msg" id="errorMsg"></p>
-
-            <button type="submit" class="btn btn-primary">Create Account</button>
-            <p style="text-align:center; margin-top:20px; font-size:14px; color:#64748b;">
-                Already have an account? <a href="login.html" style="color:#2563eb; font-weight:600;">Login here</a>
-            </p>
-        </form>
+  <div style="max-width: 500px; width: 100%;">
+    <!-- Brand Mark Header -->
+    <div style="text-align: center; margin-bottom: 28px;">
+      <a href="index.html" class="brand" style="justify-content: center; margin-bottom: 16px; text-decoration: none;">
+        <div class="brand-icon" style="animation: knotPulse 4s infinite ease-in-out;">⇄</div>
+        <span class="brand-name" style="font-size: 20px;">Skill<span>Swap</span></span>
+      </a>
+      <h1 style="font-family: var(--font-serif); font-size: 32px; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 8px;">
+        Join the <em>Reciprocal Network</em>
+      </h1>
+      <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">
+        Pass craft between peers. Everyone teaches what they know and learns what they desire.
+      </p>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+    <!-- Onboarding Incentive Pill -->
+    <div class="card" style="margin-bottom: 20px; padding: 14px 18px; background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.25); display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 22px;">🪙</span>
+      <div style="font-size: 13px; color: var(--text);">
+        <strong style="color: var(--coin-gold);">+100 Skill Coins Welcome Grant:</strong> Automatically credited to your bilateral balance on signup.
+      </div>
+    </div>
+
+    <!-- Registration Card -->
+    <div class="card" style="padding: 28px;">
+      <form id="registerForm">
+        <div class="input-group">
+          <label class="input-label" for="regName">Full Name</label>
+          <input type="text" id="regName" class="input-text" placeholder="e.g. Maya Lin" required autocomplete="name">
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <div class="input-group">
+          <label class="input-label" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="input-text" placeholder="maya@example.com" required autocomplete="email">
         </div>
-    </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let form = document.getElementById("registerForm");
-        let errorMsg = document.getElementById("errorMsg");
+        <div class="input-group">
+          <label class="input-label" for="regPassword">Password (Minimum 6 characters)</label>
+          <input type="password" id="regPassword" class="input-text" placeholder="Create a secure passphrase" minlength="6" required autocomplete="new-password">
+        </div>
 
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
+        <div class="input-group">
+          <label class="input-label" for="regTimezone">Scheduling Timezone</label>
+          <select id="regTimezone" class="input-select" required>
+            <option value="UTC-5 (Eastern Time)">UTC-5 (Eastern Time)</option>
+            <option value="UTC-6 (Central Time)">UTC-6 (Central Time)</option>
+            <option value="UTC-7 (Mountain Time)">UTC-7 (Mountain Time)</option>
+            <option value="UTC-8 (Pacific Time)">UTC-8 (Pacific Time)</option>
+            <option value="UTC+0 (GMT/UTC)">UTC+0 (GMT/UTC)</option>
+            <option value="UTC+1 (Central European Time)">UTC+1 (Central European Time)</option>
+            <option value="UTC+5:30 (India Standard Time)">UTC+5:30 (India Standard Time)</option>
+            <option value="UTC+8 (Singapore/Perth)">UTC+8 (Singapore/Perth)</option>
+          </select>
+        </div>
 
-            let name = document.getElementById("name").value.trim();
-            let email = document.getElementById("email").value.trim();
-            let password = document.getElementById("password").value;
+        <div class="input-group">
+          <label class="input-label" for="regBio">Teaching Cadence &amp; Learning Goals</label>
+          <textarea id="regBio" class="input-textarea" rows="2" placeholder="What craft do you feel comfortable sharing, and what are you excited to explore?"></textarea>
+        </div>
 
-            // Basic validation
-            if (name == "" || email == "" || password == "") {
-                errorMsg.textContent = "Please fill in all fields.";
-                errorMsg.style.display = "block";
-                return;
-            }
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px; padding: 12px;">
+          Create Practitioner Account &amp; Claim Coins &rarr;
+        </button>
+      </form>
+    </div>
 
-            if (!email.includes("@")) {
-                errorMsg.textContent = "Please enter a valid email address.";
-                errorMsg.style.display = "block";
-                return;
-            }
+    <div style="text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--text-muted);">
+      Already a member? <a href="login.html" style="color: var(--accent-seek); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;">Sign in to your studio &rarr;</a>
+    </div>
+  </div>
 
-            if (password.length < 6) {
-                errorMsg.textContent = "Password must be at least 6 characters.";
-                errorMsg.style.display = "block";
-                return;
-            }
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("registerForm");
 
-            let selectedRole = document.querySelector('input[name="role"]:checked').value;
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("regName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const pass = document.getElementById("regPassword").value;
+        const tz = document.getElementById("regTimezone").value;
+        const bio = document.getElementById("regBio").value.trim();
 
-            let users = getUsers();
-            let alreadyExists = users.some(u => u.email === email && u.role === selectedRole);
-
-            if (alreadyExists) {
-                errorMsg.textContent = `You already have a ${selectedRole} profile with this email.`;
-                errorMsg.style.display = "block";
-                return;
-            }
-
-            errorMsg.style.display = "none";
-
-            // Create the new profile with default starting values.
-            // Coins start at 0 - in SkillSwap, the only way to earn coins is
-            // by completing a session (teachers earn 40, learners earn 10).
-            let newUser = {
-                id: Date.now().toString() + Math.floor(Math.random() * 1000),
-                name: name,
-                email: email,
-                password: password,
-                role: selectedRole,
-                bio: "",
-                teachSkills: [],
-                learnSkills: [],
-                coins: 0,
-                reputation: 5,
-                coinHistory: []
-            };
-
-            users.push(newUser);
-            saveUsers(users);
-
-            // sessionStorage is per-tab, so each browser tab can be logged in
-            // as a different profile - this is what allows a Teacher profile
-            // and a Learner profile (even from the same email) to be logged
-            // in at the same time in two separate tabs.
-            sessionStorage.setItem("currentUserId", newUser.id);
-
-            window.location.href = "dashboard.html";
-        });
-    </script>
+        try {
+          window.SkillSwapEngine.register(name, email, pass, bio, tz);
+          window.showToast("Account created! +100 Skill Coins credited. Welcome to SkillSwap.", "success");
+          setTimeout(() => {
+            window.location.href = "skills.html";
+          }, 400);
+        } catch (err) {
+          window.showToast(err.message, "error");
+        }
+      });
+    });
+  </script>
 </body>
 </html>

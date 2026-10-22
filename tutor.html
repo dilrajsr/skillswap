@@ -1,92 +1,89 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Tutor Profile</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Member Detail</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">
-                SkillSwap <span class="logo-badge">PRO</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
-                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
-                <li><a href="sessions.html">Sessions</a></li>
-                <li><a href="chat.html">Chat</a></li>
-                <li><a href="coins.html">Coins</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li id="authLink"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container">
-        <div class="card" style="width:100%; max-width:500px; margin:20px auto; padding:32px;" id="tutorInfo">
-            <!-- tutor details go here -->
-        </div>
+  <main class="main-content">
+    <div style="margin-bottom: 20px;">
+      <a href="find-tutor.html" class="btn btn-secondary btn-sm">&larr; Back to Matches</a>
     </div>
 
-    <!-- Modern Multi-Column Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>SkillSwap</h3>
-                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+    <div class="card" id="memberDetailCard" style="max-width: 680px; margin: 0 auto;">
+      <!-- Populated dynamically -->
+    </div>
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="engine.js"></script>
+  <script src="nav.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get("id") || localStorage.getItem("selectedTutorId") || "usr_elena";
+
+      const user = window.SkillSwapStorage.getUserById(userId);
+      const card = document.getElementById("memberDetailCard");
+
+      if (!user) {
+        card.innerHTML = `<p style="color: var(--text-muted); text-align: center;">Member not found. <a href="find-tutor.html" style="color: var(--primary);">Return to matches</a>.</p>`;
+        return;
+      }
+
+      const userSkills = window.SkillSwapStorage.getUserSkills(user.id);
+      const offers = userSkills.filter(s => s.type === "OFFER");
+      const wants = userSkills.filter(s => s.type === "WANT");
+
+      card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+          <div class="user-avatar" style="width: 56px; height: 56px; font-size: 20px; background-color: ${user.avatarColor};">
+            ${user.name.split(" ").map(n => n[0]).join("")}
+          </div>
+          <div>
+            <h1 style="font-size: 20px; font-weight: 700;">${user.name}</h1>
+            <div style="font-size: 13px; color: var(--text-faint); margin-top: 2px;">
+              ${user.timezone} &bull; Rating: ${user.reputation} / 5.0 (${user.sessionsCompleted} completed sessions)
             </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="find-tutor.html">Find a Tutor</a></li>
-                    <li><a href="skills.html">Skills Catalog</a></li>
-                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Account</h4>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up Free</a></li>
-                    <li><a href="profile.html">Edit Profile</a></li>
-                    <li><a href="sessions.html">My Sessions</a></li>
-                </ul>
-            </div>
+          </div>
         </div>
-        <div class="footer-bottom">
-            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+          ${user.bio || 'Community peer mentor on SkillSwap.'}
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <div style="background-color: var(--ground); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-light); margin-bottom: 8px; text-transform: uppercase;">
+              Skills Offered
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              ${offers.map(s => `
+                <div style="font-size: 13px;">• <strong>${s.skillName}</strong> <span style="color: var(--text-faint); font-size: 11.5px;">(${s.proficiency})</span></div>
+              `).join('') || '<span style="color:var(--text-faint);">None listed</span>'}
+            </div>
+          </div>
+
+          <div style="background-color: var(--ground); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 8px; text-transform: uppercase;">
+              Skills Wanted
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              ${wants.map(s => `
+                <div style="font-size: 13px;">• <strong>${s.skillName}</strong> <span style="color: var(--text-faint); font-size: 11.5px;">(${s.proficiency})</span></div>
+              `).join('') || '<span style="color:var(--text-faint);">None listed</span>'}
+            </div>
+          </div>
         </div>
-    </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
-    <script src="script.js"></script>
-    <script>
-        let tutorId = localStorage.getItem("selectedTutorId");
-        let tutor = getUsers().find(u => u.id === tutorId && u.role === "teacher");
-        let tutorInfo = document.getElementById("tutorInfo");
-
-        if (!tutor) {
-            tutorInfo.innerHTML = "<p style='color:#64748b;'>No tutor selected. Please go back to <a href='find-tutor.html' style='color:#2563eb; font-weight:600;'>Find Tutor</a>.</p>";
-        } else {
-            let skillsText = tutor.teachSkills.length > 0 ? tutor.teachSkills.join(", ") : "No skills listed yet";
-            tutorInfo.innerHTML = `
-                <h2>${tutor.name}</h2>
-                <div style="margin-bottom:16px;"><span class="rating">🏆 ${tutor.coins} coins earned teaching</span></div>
-                <p><strong>Can teach:</strong> ${skillsText}</p>
-                <p style="color:#64748b; line-height:1.6;"><strong>About:</strong> ${tutor.bio || "This tutor hasn't written a bio yet."}</p>
-                <button class="btn btn-primary" id="connectBtn" style="width:100%; margin-top:20px; padding:12px;">Get Connected &rarr;</button>
-            `;
-
-            document.getElementById("connectBtn").addEventListener("click", () => {
-                startConnection(tutor);
-            });
-        }
-    </script>
+        <a href="find-tutor.html" class="btn btn-primary" style="width: 100%;">
+          View in Bidirectional Matches &rarr;
+        </a>
+      `;
+    });
+  </script>
 </body>
 </html>
