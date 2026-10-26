@@ -101,19 +101,10 @@
     </footer>
 
   
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
-
-        // ----- Show only the section that matches this profile's role -----
-        if (user.role === "teacher") {
-            document.getElementById("teacherView").style.display = "block";
-        } else if (user.role === "learner") {
-            document.getElementById("learnerView").style.display = "block";
-        } else {
-            document.getElementById("adminView").style.display = "block";
-        }
+        let user = null;
 
         let teachList = document.getElementById("teachList");
         let learnList = document.getElementById("learnList");
@@ -125,15 +116,12 @@
                 teachList.innerHTML = "";
                 user.teachSkills.forEach((skill, index) => {
                     let li = document.createElement("li");
-                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeTeachBtn">Remove</button>`;
+                    li.innerHTML = `<span>${esc(skill)}</span> <button data-index="${index}" class="removeTeachBtn">Remove</button>`;
                     teachList.appendChild(li);
                 });
                 document.querySelectorAll(".removeTeachBtn").forEach((btn) => {
                     btn.addEventListener("click", (e) => {
-                        let index = e.target.getAttribute("data-index");
-                        user.teachSkills.splice(index, 1);
-                        updateCurrentUser(user);
-                        displaySkills();
+                        removeSkill(e.target.getAttribute("data-index"));
                     });
                 });
             }
@@ -142,55 +130,75 @@
                 learnList.innerHTML = "";
                 user.learnSkills.forEach((skill, index) => {
                     let li = document.createElement("li");
-                    li.innerHTML = `<span>${skill}</span> <button data-index="${index}" class="removeLearnBtn">Remove</button>`;
+                    li.innerHTML = `<span>${esc(skill)}</span> <button data-index="${index}" class="removeLearnBtn">Remove</button>`;
                     learnList.appendChild(li);
                 });
                 document.querySelectorAll(".removeLearnBtn").forEach((btn) => {
                     btn.addEventListener("click", (e) => {
-                        let index = e.target.getAttribute("data-index");
-                        user.learnSkills.splice(index, 1);
-                        updateCurrentUser(user);
-                        displaySkills();
+                        removeSkill(e.target.getAttribute("data-index"));
                     });
                 });
             }
         }
 
-        displaySkills();
-
-        if (teachInput) {
-            document.getElementById("addTeachBtn").addEventListener("click", () => {
-                let value = teachInput.value.trim();
-                if (value == "") {
-                    alert("Please enter a skill.");
-                    return;
-                }
-                user.teachSkills.push(value);
-                updateCurrentUser(user);
-                teachInput.value = "";
-                displaySkills();
-            });
-            teachInput.addEventListener("keydown", (e) => {
-                if (e.key == "Enter") document.getElementById("addTeachBtn").click();
-            });
+        // the server decides which list to use (teach or learn) from the user's role
+        async function addSkill(input) {
+            let value = input.value.trim();
+            if (value == "") {
+                alert("Please enter a skill.");
+                return;
+            }
+            let result = await api("/api/skills", "POST", { skill: value });
+            if (result.status !== 200) {
+                alert(result.data.message || "Could not add the skill.");
+                return;
+            }
+            user = result.data;
+            input.value = "";
+            displaySkills();
         }
 
-        if (learnInput) {
-            document.getElementById("addLearnBtn").addEventListener("click", () => {
-                let value = learnInput.value.trim();
-                if (value == "") {
-                    alert("Please enter a skill.");
-                    return;
-                }
-                user.learnSkills.push(value);
-                updateCurrentUser(user);
-                learnInput.value = "";
-                displaySkills();
-            });
-            learnInput.addEventListener("keydown", (e) => {
-                if (e.key == "Enter") document.getElementById("addLearnBtn").click();
-            });
+        async function removeSkill(index) {
+            let result = await api("/api/skills/" + index, "DELETE");
+            if (result.status !== 200) {
+                alert(result.data.message || "Could not remove the skill.");
+                return;
+            }
+            user = result.data;
+            displaySkills();
         }
+
+        async function init() {
+            user = await requireLogin();
+            if (!user) return;
+
+            // ----- Show only the section that matches this profile's role -----
+            if (user.role === "teacher") {
+                document.getElementById("teacherView").style.display = "block";
+            } else if (user.role === "learner") {
+                document.getElementById("learnerView").style.display = "block";
+            } else {
+                document.getElementById("adminView").style.display = "block";
+            }
+
+            displaySkills();
+
+            if (teachInput) {
+                document.getElementById("addTeachBtn").addEventListener("click", () => addSkill(teachInput));
+                teachInput.addEventListener("keydown", (e) => {
+                    if (e.key == "Enter") document.getElementById("addTeachBtn").click();
+                });
+            }
+
+            if (learnInput) {
+                document.getElementById("addLearnBtn").addEventListener("click", () => addSkill(learnInput));
+                learnInput.addEventListener("keydown", (e) => {
+                    if (e.key == "Enter") document.getElementById("addLearnBtn").click();
+                });
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>

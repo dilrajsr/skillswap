@@ -122,12 +122,44 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
+        // draws one leaderboard table (used for both tutors and learners)
+        function fillLeaderboard(people, tbody, user, emptyText, rankRole) {
+            if (people.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3">${emptyText}</td></tr>`;
+            }
 
-        if (user) {
+            people.forEach((person, index) => {
+                let rank = index + 1;
+                let row = document.createElement("tr");
+                let isCurrentUser = person.id === user.id;
+
+                if (isCurrentUser) {
+                    row.style.backgroundColor = "#eff6ff";
+                    row.style.fontWeight = "bold";
+                }
+
+                let rankBadge = rank === 1 ? "🥇 #1" : (rank === 2 ? "🥈 #2" : (rank === 3 ? "🥉 #3" : `#${rank}`));
+
+                row.innerHTML = `
+                    <td><strong>${rankBadge}</strong></td>
+                    <td>${esc(person.name)}${isCurrentUser ? " <span style='color:#2563eb;'>(You)</span>" : ""}</td>
+                    <td><strong>🪙 ${person.coins}</strong></td>
+                `;
+                tbody.appendChild(row);
+
+                if (isCurrentUser && user.role === rankRole) {
+                    document.getElementById("rankValue").textContent = `#${rank}`;
+                }
+            });
+        }
+
+        async function init() {
+            let user = await requireLogin();
+            if (!user) return;
+
             document.getElementById("coinBalance").textContent = user.coins;
             document.getElementById("repValue").textContent = user.reputation;
 
@@ -140,75 +172,18 @@
             } else {
                 document.getElementById("skillsStatLabel").textContent = "Skills";
                 document.getElementById("skillsCount").textContent = "-";
-            }
-
-            // ----- Build the leaderboard: tutors only, ranked by coins earned teaching -----
-            let ranked = getTutors().sort((a, b) => b.coins - a.coins);
-            let leaderboardRows = document.getElementById("leaderboardRows");
-
-            if (ranked.length === 0) {
-                leaderboardRows.innerHTML = `<tr><td colspan="3">No tutors yet.</td></tr>`;
-            }
-
-            if (user.role !== "teacher" && user.role !== "learner") {
                 document.getElementById("rankValue").textContent = "-";
             }
 
-            ranked.forEach((person, index) => {
-                let rank = index + 1;
-                let row = document.createElement("tr");
-                let isCurrentUser = person.id === user.id;
+            // ----- Leaderboards: tutors ranked by coins earned teaching, learners by coins earned attending -----
+            let result = await api("/api/leaderboard");
+            let board = result.status === 200 ? result.data : { tutors: [], learners: [] };
 
-                if (isCurrentUser) {
-                    row.style.backgroundColor = "#eff6ff";
-                    row.style.fontWeight = "bold";
-                }
+            let ranked = board.tutors.sort((a, b) => b.coins - a.coins);
+            fillLeaderboard(ranked, document.getElementById("leaderboardRows"), user, "No tutors yet.", "teacher");
 
-                let rankBadge = rank === 1 ? "🥇 #1" : (rank === 2 ? "🥈 #2" : (rank === 3 ? "🥉 #3" : `#${rank}`));
-
-                row.innerHTML = `
-                    <td><strong>${rankBadge}</strong></td>
-                    <td>${person.name}${isCurrentUser ? " <span style='color:#2563eb;'>(You)</span>" : ""}</td>
-                    <td><strong>🪙 ${person.coins}</strong></td>
-                `;
-                leaderboardRows.appendChild(row);
-
-                if (isCurrentUser && user.role === "teacher") {
-                    document.getElementById("rankValue").textContent = `#${rank}`;
-                }
-            });
-
-            // ----- Build the leaderboard: learners only, ranked by coins earned attending -----
-            let rankedLearners = getLearners().sort((a, b) => b.coins - a.coins);
-            let learnerLeaderboardRows = document.getElementById("learnerLeaderboardRows");
-
-            if (rankedLearners.length === 0) {
-                learnerLeaderboardRows.innerHTML = `<tr><td colspan="3">No learners yet.</td></tr>`;
-            }
-
-            rankedLearners.forEach((person, index) => {
-                let rank = index + 1;
-                let row = document.createElement("tr");
-                let isCurrentUser = person.id === user.id;
-
-                if (isCurrentUser) {
-                    row.style.backgroundColor = "#eff6ff";
-                    row.style.fontWeight = "bold";
-                }
-
-                let rankBadge = rank === 1 ? "🥇 #1" : (rank === 2 ? "🥈 #2" : (rank === 3 ? "🥉 #3" : `#${rank}`));
-
-                row.innerHTML = `
-                    <td><strong>${rankBadge}</strong></td>
-                    <td>${person.name}${isCurrentUser ? " <span style='color:#2563eb;'>(You)</span>" : ""}</td>
-                    <td><strong>🪙 ${person.coins}</strong></td>
-                `;
-                learnerLeaderboardRows.appendChild(row);
-
-                if (isCurrentUser && user.role === "learner") {
-                    document.getElementById("rankValue").textContent = `#${rank}`;
-                }
-            });
+            let rankedLearners = board.learners.sort((a, b) => b.coins - a.coins);
+            fillLeaderboard(rankedLearners, document.getElementById("learnerLeaderboardRows"), user, "No learners yet.", "learner");
 
             // ----- Coin activity history -----
             let history = user.coinHistory || [];
@@ -222,13 +197,15 @@
                 let row = document.createElement("tr");
                 let amountText = entry.amount > 0 ? `+${entry.amount}` : entry.amount;
                 row.innerHTML = `
-                    <td>${entry.desc}</td>
+                    <td>${esc(entry.desc)}</td>
                     <td><span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">🪙 ${amountText}</span></td>
-                    <td style="color:#64748b;">${entry.date}</td>
+                    <td style="color:#64748b;">${esc(entry.date)}</td>
                 `;
                 historyRows.appendChild(row);
             });
         }
+
+        init();
     </script>
 </body>
 </html>

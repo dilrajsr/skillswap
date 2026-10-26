@@ -83,39 +83,35 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
         let form = document.getElementById("loginForm");
         let errorMsg = document.getElementById("errorMsg");
 
-        form.addEventListener("submit", (e) => {
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = "block";
+        }
+
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             let email = document.getElementById("email").value.trim();
             let password = document.getElementById("password").value;
 
-            // The admin account is hardcoded and cannot be registered by anyone
-            if (email === ADMIN_USER.email && password === ADMIN_USER.password) {
-                sessionStorage.setItem("currentUserId", ADMIN_USER.id);
-                window.location.href = "dashboard.html";
-                return;
-            }
+            // the server checks the email + password (and the hard-coded admin account)
+            let result = await api("/api/login", "POST", { email: email, password: password });
 
-            let users = getUsers();
-            let matches = users.filter(u => u.email === email && u.password === password);
-
-            if (matches.length === 0) {
-                errorMsg.textContent = "Invalid email or password.";
-                errorMsg.style.display = "block";
+            if (result.status !== 200) {
+                showError(result.data.message || "Login failed.");
                 return;
             }
 
             errorMsg.style.display = "none";
 
-            if (matches.length === 1) {
-                // only one profile for this email - log straight in
-                sessionStorage.setItem("currentUserId", matches[0].id);
+            if (!result.data.chooseProfile) {
+                // only one profile for this email - already logged in
                 window.location.href = "dashboard.html";
                 return;
             }
@@ -128,14 +124,19 @@
             roleSelectBox.style.display = "block";
             roleButtons.innerHTML = "";
 
-            matches.forEach((matchedProfile) => {
+            result.data.chooseProfile.forEach((matchedProfile) => {
                 let roleLabel = matchedProfile.role.charAt(0).toUpperCase() + matchedProfile.role.slice(1);
                 let btn = document.createElement("button");
                 btn.className = "btn btn-primary";
                 btn.textContent = `Continue as ${roleLabel}`;
-                btn.addEventListener("click", () => {
-                    sessionStorage.setItem("currentUserId", matchedProfile.id);
-                    window.location.href = "dashboard.html";
+                btn.addEventListener("click", async () => {
+                    let chosen = await api("/api/login/choose", "POST", { id: matchedProfile.id });
+                    if (chosen.status === 200) {
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert(chosen.data.message || "Please login again.");
+                        window.location.reload();
+                    }
                 });
                 roleButtons.appendChild(btn);
             });

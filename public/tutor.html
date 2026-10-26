@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSwap - Profile Settings</title>
+    <title>SkillSwap - Tutor Profile</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,26 +28,8 @@
     </header>
 
     <div class="container">
-        <form id="profileForm" class="form-box">
-            <h1>Edit Profile</h1>
-            <p id="roleNote" style="text-align:center; color:#64748b; font-size:14px; margin-top:-15px; margin-bottom:20px; font-weight:600;"></p>
-
-            <label for="name">Full Name</label>
-            <input type="text" id="name" placeholder="Your display name">
-
-            <label for="email">Email Address (Read-only)</label>
-            <input type="text" id="email" disabled>
-
-            <label for="bio">About Me &amp; Experience</label>
-            <textarea id="bio" rows="4" placeholder="Tell other learners about your skills, background, and teaching style..."></textarea>
-
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <p class="success-msg" id="successMsg">✓ Profile updated successfully!</p>
-        </form>
-
-        <div id="adminNotice" class="form-box" style="display:none; text-align:center;">
-            <h1>Admin Profile</h1>
-            <p style="color:#64748b; margin-top:10px;">The system administrator account is fixed in the code and cannot be edited.</p>
+        <div class="card" style="width:100%; max-width:500px; margin:20px auto; padding:32px;" id="tutorInfo">
+            <!-- tutor details go here -->
         </div>
     </div>
 
@@ -82,42 +64,45 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
+        // the tutor is chosen with the address, e.g. tutor.html?id=123
+        async function init() {
+            let tutorId = new URLSearchParams(window.location.search).get("id");
+            let tutorInfo = document.getElementById("tutorInfo");
 
-        let nameInput = document.getElementById("name");
-        let emailInput = document.getElementById("email");
-        let bioInput = document.getElementById("bio");
-        let profileForm = document.getElementById("profileForm");
-        let successMsg = document.getElementById("successMsg");
+            let result = tutorId ? await api("/api/tutors/" + encodeURIComponent(tutorId)) : null;
 
-        if (user && user.role === "admin") {
-            profileForm.style.display = "none";
-            document.getElementById("adminNotice").style.display = "block";
-        } else if (user) {
-            nameInput.value = user.name;
-            emailInput.value = user.email;
-            bioInput.value = user.bio || "";
-            let roleLabel = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-            document.getElementById("roleNote").textContent = `Editing your ${roleLabel} profile`;
-        }
-
-        profileForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-
-            if (nameInput.value.trim() == "") {
-                alert("Name cannot be empty.");
+            if (!result || result.status !== 200) {
+                tutorInfo.innerHTML = "<p style='color:#64748b;'>No tutor selected. Please go back to <a href='find-tutor.html' style='color:#2563eb; font-weight:600;'>Find Tutor</a>.</p>";
                 return;
             }
 
-            user.name = nameInput.value.trim();
-            user.bio = bioInput.value.trim();
-            updateCurrentUser(user);
+            let tutor = result.data;
+            let skillsText = tutor.teachSkills.length > 0 ? tutor.teachSkills.join(", ") : "No skills listed yet";
 
-            successMsg.style.display = "block";
-        });
+            // introduction video the teacher uploaded, so students can preview it
+            let videoHtml = tutor.videoUrl
+                ? `<video class="intro-video" controls preload="metadata" src="${esc(tutor.videoUrl)}"></video>`
+                : `<p style="color:#94a3b8; font-size:0.9rem;">This tutor hasn't uploaded an introduction video yet.</p>`;
+
+            tutorInfo.innerHTML = `
+                <div class="card-top">
+                    ${avatarHtml(tutor, 80)}
+                    <h2 style="margin-bottom:0;">${esc(tutor.name)}</h2>
+                </div>
+                ${videoHtml}
+                <div style="margin-bottom:16px;"><span class="rating">🏆 ${tutor.coins} coins earned teaching</span></div>
+                <p><strong>Can teach:</strong> ${esc(skillsText)}</p>
+                <p style="color:#64748b; line-height:1.6;"><strong>About:</strong> ${esc(tutor.bio) || "This tutor hasn't written a bio yet."}</p>
+                ${connectBoxHtml(tutor)}
+            `;
+
+            setupConnectBox(tutorInfo, tutor);
+        }
+
+        init();
     </script>
 </body>
 </html>

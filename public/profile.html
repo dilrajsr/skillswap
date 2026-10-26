@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Profile Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <form id="profileForm" class="form-box">
+            <h1>Edit Profile</h1>
+            <p id="roleNote" style="text-align:center; color:#64748b; font-size:14px; margin-top:-15px; margin-bottom:20px; font-weight:600;"></p>
+
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Your display name">
+
+            <label for="email">Email Address (Read-only)</label>
+            <input type="text" id="email" disabled>
+
+            <label for="bio">About Me &amp; Experience</label>
+            <textarea id="bio" rows="4" placeholder="Tell other learners about your skills, background, and teaching style..."></textarea>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <p class="success-msg" id="successMsg">✓ Profile updated successfully!</p>
+        </form>
+
+        <!-- Profile picture (teachers and learners) -->
+        <form id="pictureForm" class="form-box" style="display:none; margin-top:0;" enctype="multipart/form-data">
+            <h1 style="font-size:1.4rem;">Profile Picture</h1>
+            <div class="upload-preview" id="pictureArea"></div>
+
+            <label for="pictureInput">Choose a picture (png or jpeg, max 15 MB)</label>
+            <input type="file" id="pictureInput" accept="image/png,image/jpeg">
+            <p class="error-msg" id="pictureError"></p>
+
+            <button type="submit" class="btn btn-primary">Upload Picture</button>
+            <p class="success-msg" id="pictureSuccess">✓ Picture updated!</p>
+        </form>
+
+        <!-- Introduction video (teachers only) - students can watch it on the tutor profile -->
+        <form id="videoForm" class="form-box" style="display:none; margin-top:0;" enctype="multipart/form-data">
+            <h1 style="font-size:1.4rem;">Introduction Video</h1>
+            <p style="text-align:center; color:#64748b; font-size:14px; margin-top:-12px; margin-bottom:18px;">Students can preview this video on your tutor profile.</p>
+            <div id="videoArea"></div>
+
+            <label for="videoInput">Choose a video (mp4 or webm, max 50 MB)</label>
+            <input type="file" id="videoInput" accept="video/mp4,video/webm">
+            <p class="error-msg" id="videoError"></p>
+
+            <button type="submit" class="btn btn-primary">Upload Video</button>
+            <button type="button" class="btn btn-danger" id="removeVideoBtn" style="display:none; width:100%; margin-top:10px; padding:12px;">Remove Video</button>
+            <p class="success-msg" id="videoSuccess">✓ Video updated!</p>
+        </form>
+
+        <div id="adminNotice" class="form-box" style="display:none; text-align:center;">
+            <h1>Admin Profile</h1>
+            <p style="color:#64748b; margin-top:10px;">The system administrator account is fixed in the code and cannot be edited.</p>
+        </div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
+    <script src="script.js"></script>
+    <script>
+        let user = null;
+
+        let nameInput = document.getElementById("name");
+        let emailInput = document.getElementById("email");
+        let bioInput = document.getElementById("bio");
+        let profileForm = document.getElementById("profileForm");
+        let successMsg = document.getElementById("successMsg");
+
+        let pictureForm = document.getElementById("pictureForm");
+        let videoForm = document.getElementById("videoForm");
+
+        // shows the current picture / video on the page
+        function showMedia() {
+            document.getElementById("pictureArea").innerHTML = avatarHtml(user, 110);
+
+            if (user.role === "teacher") {
+                document.getElementById("videoArea").innerHTML = user.videoUrl
+                    ? `<video class="intro-video" controls preload="metadata" src="${esc(user.videoUrl)}"></video>`
+                    : `<p style="color:#94a3b8; font-size:0.9rem; text-align:center; margin-bottom:16px;">No introduction video uploaded yet.</p>`;
+                document.getElementById("removeVideoBtn").style.display = user.videoUrl ? "block" : "none";
+            }
+        }
+
+        // sends the chosen file to the server (multer saves it in the uploads folder)
+        async function uploadFile(url, fieldName, input, errorBox, successBox) {
+            errorBox.style.display = "none";
+            successBox.style.display = "none";
+
+            if (input.files.length === 0) {
+                errorBox.textContent = "Please choose a file first.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append(fieldName, input.files[0]);
+
+            let result = await api(url, "POST", formData);
+
+            if (result.status !== 200) {
+                errorBox.textContent = result.data.message || "Upload failed.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            user = result.data;
+            input.value = "";
+            successBox.style.display = "block";
+            showMedia();
+        }
+
+        async function init() {
+            user = await requireLogin();
+            if (!user) return;
+
+            if (user.role === "admin") {
+                profileForm.style.display = "none";
+                document.getElementById("adminNotice").style.display = "block";
+                return;
+            }
+
+            nameInput.value = user.name;
+            emailInput.value = user.email;
+            bioInput.value = user.bio || "";
+            let roleLabel = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            document.getElementById("roleNote").textContent = `Editing your ${roleLabel} profile`;
+
+            pictureForm.style.display = "block";
+            if (user.role === "teacher") {
+                videoForm.style.display = "block";
+            }
+            showMedia();
+        }
+
+        profileForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (nameInput.value.trim() == "") {
+                alert("Name cannot be empty.");
+                return;
+            }
+
+            let result = await api("/api/profile", "PUT", {
+                name: nameInput.value.trim(),
+                bio: bioInput.value.trim()
+            });
+
+            if (result.status !== 200) {
+                alert(result.data.message || "Could not save the profile.");
+                return;
+            }
+
+            user = result.data;
+            successMsg.style.display = "block";
+        });
+
+        pictureForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            uploadFile("/api/profile/picture", "picture",
+                document.getElementById("pictureInput"),
+                document.getElementById("pictureError"),
+                document.getElementById("pictureSuccess"));
+        });
+
+        videoForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            uploadFile("/api/profile/video", "video",
+                document.getElementById("videoInput"),
+                document.getElementById("videoError"),
+                document.getElementById("videoSuccess"));
+        });
+
+        document.getElementById("removeVideoBtn").addEventListener("click", async () => {
+            let result = await api("/api/profile/video", "DELETE");
+            if (result.status === 200) {
+                user = result.data;
+                document.getElementById("videoSuccess").style.display = "none";
+                showMedia();
+            } else {
+                alert(result.data.message || "Could not remove the video.");
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

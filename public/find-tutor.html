@@ -29,9 +29,15 @@
 
     <div class="container">
 
-        <div id="blockedView" style="display:none;">
-            <h1>Find a Tutor</h1>
-            <p style="color:#64748b;">Teachers don't use Find Tutor. Head to your <a href="skills.html" style="color:#2563eb; font-weight:600;">Teaching section</a> instead.</p>
+        <!-- Teachers see a list of students instead -->
+        <div id="studentListView" style="display:none;">
+            <h1>Find a Student</h1>
+            <p style="color:#64748b; margin-bottom:24px;">See the learners on SkillSwap and what they want to learn. Learners start a session by clicking "Get Connected" on your tutor profile.</p>
+
+            <input type="text" id="studentSearch" placeholder="🔍 Search by student name or skill..." style="width:100%; margin-bottom:32px;">
+
+            <div class="grid" id="studentContainer"></div>
+            <p id="noStudents" style="display:none; color:#64748b; margin-top:20px; font-weight:500;">No students found.</p>
         </div>
 
         <div id="tutorListView" style="display:none;">
@@ -80,21 +86,25 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+        async function init() {
+            let user = await requireLogin();
+            if (!user) return;
 
-        if (user.role === "teacher") {
-            document.getElementById("blockedView").style.display = "block";
-        } else {
-            document.getElementById("tutorListView").style.display = "block";
-            setupFindTutor();
+            if (user.role === "teacher") {
+                document.title = "SkillSwap - Find a Student";
+                document.getElementById("studentListView").style.display = "block";
+                setupFindStudent();
+            } else {
+                document.getElementById("tutorListView").style.display = "block";
+                setupFindTutor();
+            }
         }
 
-        function setupFindTutor() {
-            let allTutors = getTutors();
+        async function setupFindTutor() {
+            let allTutors = await getTutors();
 
             let tutorContainer = document.getElementById("tutorContainer");
             let noTutors = document.getElementById("noTutors");
@@ -116,20 +126,20 @@
                     let card = document.createElement("div");
                     card.className = "card";
                     card.innerHTML = `
-                        <h3>${tutor.name}</h3>
-                        <p>Teaches: ${skillsText}</p>
+                        <div class="card-top">
+                            ${avatarHtml(tutor, 52)}
+                            <h3>${esc(tutor.name)}</h3>
+                        </div>
+                        <p>Teaches: ${esc(skillsText)}</p>
+                        ${tutor.videoUrl
+                            ? `<video class="intro-video" controls preload="metadata" src="${esc(tutor.videoUrl)}"></video>`
+                            : `<p style="color:#94a3b8; font-size:0.85rem;">No introduction video yet.</p>`}
                         <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
-                        <button class="btn btn-primary connectBtn" data-id="${tutor.id}">Get Connected</button>
+                        ${connectBoxHtml(tutor)}
+                        <a href="tutor.html?id=${encodeURIComponent(tutor.id)}" class="btn btn-secondary" style="margin-top:10px; text-align:center;">View Profile</a>
                     `;
                     tutorContainer.appendChild(card);
-                });
-
-                document.querySelectorAll(".connectBtn").forEach((btn) => {
-                    btn.addEventListener("click", (e) => {
-                        let id = e.target.getAttribute("data-id");
-                        let tutor = getUsers().find(u => u.id === id);
-                        if (tutor) startConnection(tutor);
-                    });
+                    setupConnectBox(card, tutor);
                 });
             }
 
@@ -153,6 +163,48 @@
                 displayTutors(sorted);
             });
         }
+
+        // teachers: list of students (learners) with a search box
+        async function setupFindStudent() {
+            let result = await api("/api/leaderboard");
+            let allStudents = result.status === 200 ? result.data.learners : [];
+
+            let studentContainer = document.getElementById("studentContainer");
+            let noStudents = document.getElementById("noStudents");
+            let studentSearch = document.getElementById("studentSearch");
+
+            function displayStudents(studentArray) {
+                studentContainer.innerHTML = "";
+                noStudents.style.display = studentArray.length === 0 ? "block" : "none";
+
+                studentArray.forEach((student) => {
+                    let skillsText = student.learnSkills.length > 0 ? student.learnSkills.join(", ") : "No learning goals yet";
+                    let card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <div class="card-top">
+                            ${avatarHtml(student, 52)}
+                            <h3>${esc(student.name)}</h3>
+                        </div>
+                        <p>Wants to learn: ${esc(skillsText)}</p>
+                        <p class="rating">🎓 ${student.coins} coins earned attending</p>
+                    `;
+                    studentContainer.appendChild(card);
+                });
+            }
+
+            displayStudents(allStudents);
+
+            studentSearch.addEventListener("input", () => {
+                let query = studentSearch.value.toLowerCase();
+                displayStudents(allStudents.filter((student) => {
+                    return student.name.toLowerCase().includes(query) ||
+                        student.learnSkills.some(skill => skill.toLowerCase().includes(query));
+                }));
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>

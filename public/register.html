@@ -94,77 +94,60 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
         let form = document.getElementById("registerForm");
         let errorMsg = document.getElementById("errorMsg");
 
-        form.addEventListener("submit", (e) => {
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = "block";
+        }
+
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             let name = document.getElementById("name").value.trim();
             let email = document.getElementById("email").value.trim();
             let password = document.getElementById("password").value;
 
-            // Basic validation
+            // Basic validation (the server checks everything again)
             if (name == "" || email == "" || password == "") {
-                errorMsg.textContent = "Please fill in all fields.";
-                errorMsg.style.display = "block";
+                showError("Please fill in all fields.");
                 return;
             }
 
             if (!email.includes("@")) {
-                errorMsg.textContent = "Please enter a valid email address.";
-                errorMsg.style.display = "block";
+                showError("Please enter a valid email address.");
                 return;
             }
 
             if (password.length < 6) {
-                errorMsg.textContent = "Password must be at least 6 characters.";
-                errorMsg.style.display = "block";
+                showError("Password must be at least 6 characters.");
                 return;
             }
 
             let selectedRole = document.querySelector('input[name="role"]:checked').value;
 
-            let users = getUsers();
-            let alreadyExists = users.some(u => u.email === email && u.role === selectedRole);
+            // The server creates the profile with default starting values.
+            // Coins start at 0 - in SkillSwap, the only way to earn coins is
+            // by completing a session (teachers earn 40, learners earn 10).
+            let result = await api("/api/register", "POST", {
+                name: name,
+                email: email,
+                password: password,
+                role: selectedRole
+            });
 
-            if (alreadyExists) {
-                errorMsg.textContent = `You already have a ${selectedRole} profile with this email.`;
-                errorMsg.style.display = "block";
+            if (result.status !== 201) {
+                showError(result.data.message || "Could not create the account.");
                 return;
             }
 
             errorMsg.style.display = "none";
 
-            // Create the new profile with default starting values.
-            // Coins start at 0 - in SkillSwap, the only way to earn coins is
-            // by completing a session (teachers earn 40, learners earn 10).
-            let newUser = {
-                id: Date.now().toString() + Math.floor(Math.random() * 1000),
-                name: name,
-                email: email,
-                password: password,
-                role: selectedRole,
-                bio: "",
-                teachSkills: [],
-                learnSkills: [],
-                coins: 0,
-                reputation: 5,
-                coinHistory: []
-            };
-
-            users.push(newUser);
-            saveUsers(users);
-
-            // sessionStorage is per-tab, so each browser tab can be logged in
-            // as a different profile - this is what allows a Teacher profile
-            // and a Learner profile (even from the same email) to be logged
-            // in at the same time in two separate tabs.
-            sessionStorage.setItem("currentUserId", newUser.id);
-
+            // the server has logged this profile in (login cookie)
             window.location.href = "dashboard.html";
         });
     </script>

@@ -104,6 +104,7 @@
                         <th>Email</th>
                         <th>Role</th>
                         <th>Coins</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="allUsersRows"></tbody>
@@ -118,6 +119,7 @@
                         <th>Skill</th>
                         <th>Status</th>
                         <th>Started</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="allSessionsRows"></tbody>
@@ -156,76 +158,114 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
+        // admin: ask first, then delete on the server and reload the page to refresh the tables
+        async function adminDelete(question, url) {
+            if (!confirm(question)) return;
 
-        document.getElementById("welcomeText").textContent = `Welcome back, ${user.name}!`;
-
-        if (user.role === "admin") {
-            // ----- Admin view: overview of the whole platform -----
-            document.getElementById("welcomeSubtext").textContent = "Admin overview of all SkillSwap activity.";
-            document.getElementById("adminDashboard").style.display = "block";
-
-            let allUsers = getUsers();
-            let tutors = getTutors();
-            let connections = getConnections();
-
-            document.getElementById("totalUsers").textContent = allUsers.length;
-            document.getElementById("totalTutors").textContent = tutors.length;
-            document.getElementById("totalSessions").textContent = connections.length;
-
-            let allUsersRows = document.getElementById("allUsersRows");
-            allUsers.forEach((person) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><strong>${person.name}</strong></td>
-                    <td>${person.email}</td>
-                    <td><span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">${person.role}</span></td>
-                    <td><strong>🪙 ${person.coins}</strong></td>
-                `;
-                allUsersRows.appendChild(row);
-            });
-
-            let allSessionsRows = document.getElementById("allSessionsRows");
-            connections.forEach((connection) => {
-                let row = document.createElement("tr");
-                let statusBadge = connection.status === "active" 
-                    ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">Active</span>`
-                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Ended</span>`;
-                row.innerHTML = `
-                    <td>${connection.teacherName}</td>
-                    <td>${connection.learnerName}</td>
-                    <td><strong>${connection.skill}</strong></td>
-                    <td>${statusBadge}</td>
-                    <td>${connection.startedAt}</td>
-                `;
-                allSessionsRows.appendChild(row);
-            });
-
-        } else if (user.role === "teacher") {
-            document.getElementById("teacherDashboard").style.display = "flex";
-
-            document.getElementById("teachCount").textContent = user.teachSkills.length;
-            document.getElementById("teacherCoinCount").textContent = user.coins;
-            document.getElementById("teacherRepCount").textContent = user.reputation;
-
-            let taughtSessions = getConnections().filter(c => c.teacherId === user.id && c.status === "ended");
-            document.getElementById("taughtCount").textContent = taughtSessions.length;
-
-        } else {
-            // learner
-            document.getElementById("learnerDashboard").style.display = "flex";
-
-            document.getElementById("learnCount").textContent = user.learnSkills.length;
-            document.getElementById("learnerCoinCount").textContent = user.coins;
-            document.getElementById("learnerRepCount").textContent = user.reputation;
-
-            let attendedSessions = getConnections().filter(c => c.learnerId === user.id && c.status === "ended");
-            document.getElementById("attendedCount").textContent = attendedSessions.length;
+            let result = await api(url, "DELETE");
+            if (result.status !== 200) {
+                alert(result.data.message || "Could not delete.");
+                return;
+            }
+            window.location.reload();
         }
+
+        async function init() {
+            let user = await requireLogin();
+            if (!user) return;
+
+            document.getElementById("welcomeText").textContent = `Welcome back, ${user.name}!`;
+
+            let connections = await getConnections();
+
+            if (user.role === "admin") {
+                // ----- Admin view: overview of the whole platform -----
+                document.getElementById("welcomeSubtext").textContent = "Admin overview of all SkillSwap activity.";
+                document.getElementById("adminDashboard").style.display = "block";
+
+                let usersResult = await api("/api/admin/users");
+                let allUsers = usersResult.status === 200 ? usersResult.data : [];
+                let tutors = allUsers.filter(u => u.role === "teacher");
+
+                document.getElementById("totalUsers").textContent = allUsers.length;
+                document.getElementById("totalTutors").textContent = tutors.length;
+                document.getElementById("totalSessions").textContent = connections.filter(c => c.status === "active" || c.status === "ended").length;
+
+                let allUsersRows = document.getElementById("allUsersRows");
+                allUsers.forEach((person) => {
+                    let row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td><strong>${esc(person.name)}</strong></td>
+                        <td>${esc(person.email)}</td>
+                        <td><span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">${esc(person.role)}</span></td>
+                        <td><strong>🪙 ${person.coins}</strong></td>
+                        <td><button class="btn btn-danger deleteBtn" style="padding:6px 14px; font-size:0.85rem;">Delete</button></td>
+                    `;
+                    row.querySelector(".deleteBtn").addEventListener("click", () => {
+                        adminDelete(
+                            `Delete ${person.name} (${person.role})? Their profile, uploaded files and sessions will be removed.`,
+                            "/api/admin/users/" + person.id
+                        );
+                    });
+                    allUsersRows.appendChild(row);
+                });
+
+                let allSessionsRows = document.getElementById("allSessionsRows");
+                connections.forEach((connection) => {
+                    let row = document.createElement("tr");
+                    let statusBadge = connection.status === "active"
+                        ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">Active</span>`
+                        : connection.status === "pending"
+                            ? `<span class="rating" style="background:#fffbeb; color:#d97706; border-color:#fde68a;">Waiting</span>`
+                            : connection.status === "rejected"
+                                ? `<span class="rating" style="background:#fef2f2; color:#dc2626; border-color:#fecaca;">Rejected</span>`
+                                : connection.status === "cancelled"
+                                    ? `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Cancelled</span>`
+                                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Ended</span>`;
+                    row.innerHTML = `
+                        <td>${esc(connection.teacherName)}</td>
+                        <td>${esc(connection.learnerName)}</td>
+                        <td><strong>${esc(connection.skill)}</strong></td>
+                        <td>${statusBadge}</td>
+                        <td>${new Date(connection.startedAt || connection.requestedAt).toLocaleString()}</td>
+                        <td><button class="btn btn-danger deleteBtn" style="padding:6px 14px; font-size:0.85rem;">Delete</button></td>
+                    `;
+                    row.querySelector(".deleteBtn").addEventListener("click", () => {
+                        adminDelete(
+                            `Delete this session (${connection.teacherName} / ${connection.learnerName}, ${connection.skill})?`,
+                            "/api/connections/" + connection.id
+                        );
+                    });
+                    allSessionsRows.appendChild(row);
+                });
+
+            } else if (user.role === "teacher") {
+                document.getElementById("teacherDashboard").style.display = "flex";
+
+                document.getElementById("teachCount").textContent = user.teachSkills.length;
+                document.getElementById("teacherCoinCount").textContent = user.coins;
+                document.getElementById("teacherRepCount").textContent = user.reputation;
+
+                let taughtSessions = connections.filter(c => c.status === "ended");
+                document.getElementById("taughtCount").textContent = taughtSessions.length;
+
+            } else {
+                // learner
+                document.getElementById("learnerDashboard").style.display = "flex";
+
+                document.getElementById("learnCount").textContent = user.learnSkills.length;
+                document.getElementById("learnerCoinCount").textContent = user.coins;
+                document.getElementById("learnerRepCount").textContent = user.reputation;
+
+                let attendedSessions = connections.filter(c => c.status === "ended");
+                document.getElementById("attendedCount").textContent = attendedSessions.length;
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>

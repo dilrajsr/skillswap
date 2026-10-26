@@ -1206,3 +1206,96 @@ footer {
         font-size: 0.825rem;
     }
 }
+
+
+/* ===== Profile pictures + introduction videos ===== */
+.avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eff6ff;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.card-top h3 {
+    margin-bottom: 0;
+}
+
+.intro-video {
+    width: 100%;
+    max-height: 280px;
+    border-radius: var(--radius-md);
+    background: #000;
+    margin-bottom: 16px;
+}
+
+.form-box input[type="file"] {
+    width: 100%;
+    margin-bottom: 14px;
+    font-size: 0.875rem;
+}
+
+.upload-preview {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+/* ===== Skill drop-down + Get Connected ===== */
+.connect-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.skill-select {
+    width: 100%;
+    padding: 11px 14px;
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    color: var(--text-main);
+    cursor: pointer;
+    outline: none;
+}
+
+.skill-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.skill-select:disabled,
+.connect-box .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.request-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}

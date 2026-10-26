@@ -78,34 +78,24 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
-        let user = requireLogin();
-        if (!user) throw new Error("Not logged in");
-
+        let user = null;
         let sessionRows = document.getElementById("sessionRows");
         let noSessions = document.getElementById("noSessions");
         let coinsForTeaching = 40;
         let coinsForAttending = 10;
 
-        if (user.role === "teacher") {
-            document.getElementById("otherPersonHeader").textContent = "Learner";
-        } else {
-            document.getElementById("otherPersonHeader").textContent = "Tutor";
-        }
-
-        function displaySessions() {
+        async function displaySessions() {
             if (user.role === "admin") {
                 noSessions.textContent = "Admins don't have sessions. Visit the Dashboard for a full overview.";
                 noSessions.style.display = "block";
                 return;
             }
 
-            let connections = getConnections();
-            let myConnections = connections.filter((c) => {
-                return user.role === "teacher" ? c.teacherId === user.id : c.learnerId === user.id;
-            });
+            // the server only sends back the sessions that belong to this user
+            let myConnections = await getConnections();
 
             sessionRows.innerHTML = "";
 
@@ -120,28 +110,54 @@
                 let otherPersonName = user.role === "teacher" ? connection.learnerName : connection.teacherName;
                 let coinsEarned = connection.status === "ended"
                     ? `<span class="rating" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;">🪙 +${user.role === "teacher" ? coinsForTeaching : coinsForAttending}</span>`
-                    : `<span style="color:#94a3b8;">Pending</span>`;
-                let statusBadge = connection.status === "active"
-                    ? `<span class="rating" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">🟢 Active</span>`
-                    : `<span class="rating" style="background:#f1f5f9; color:#64748b; border-color:#e2e8f0;">Completed</span>`;
-                let actionCell = connection.status === "active"
-                    ? `<a href="chat.html" class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;">Continue &rarr;</a>`
                     : `<span style="color:#94a3b8;">-</span>`;
+
+                // status badge text + colours for every state of a request / session
+                let badges = {
+                    pending: { text: "⏳ Waiting", style: "background:#fffbeb; color:#d97706; border-color:#fde68a;" },
+                    active: { text: "🟢 Active", style: "background:#eff6ff; color:#2563eb; border-color:#bfdbfe;" },
+                    ended: { text: "Completed", style: "background:#f1f5f9; color:#64748b; border-color:#e2e8f0;" },
+                    rejected: { text: "Rejected", style: "background:#fef2f2; color:#dc2626; border-color:#fecaca;" },
+                    cancelled: { text: "Cancelled", style: "background:#f1f5f9; color:#64748b; border-color:#e2e8f0;" }
+                };
+                let badge = badges[connection.status];
+                let statusBadge = `<span class="rating" style="${badge.style}">${badge.text}</span>`;
+
+                let actionCell = `<span style="color:#94a3b8;">-</span>`;
+                if (connection.status === "active") {
+                    actionCell = `<a href="chat.html" class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;">Continue &rarr;</a>`;
+                } else if (connection.status === "pending") {
+                    let label = user.role === "teacher" ? "Answer" : "View";
+                    actionCell = `<a href="chat.html" class="btn btn-secondary" style="padding:6px 14px; font-size:0.85rem;">${label} &rarr;</a>`;
+                }
 
                 let row = document.createElement("tr");
                 row.innerHTML = `
-                    <td><strong>${otherPersonName}</strong></td>
-                    <td><strong>${connection.skill}</strong></td>
+                    <td><strong>${esc(otherPersonName)}</strong></td>
+                    <td><strong>${esc(connection.skill)}</strong></td>
                     <td>${statusBadge}</td>
                     <td>${coinsEarned}</td>
-                    <td style="color:#64748b;">${connection.startedAt}</td>
+                    <td style="color:#64748b;">${new Date(connection.startedAt || connection.requestedAt).toLocaleString()}</td>
                     <td>${actionCell}</td>
                 `;
                 sessionRows.appendChild(row);
             });
         }
 
-        displaySessions();
+        async function init() {
+            user = await requireLogin();
+            if (!user) return;
+
+            if (user.role === "teacher") {
+                document.getElementById("otherPersonHeader").textContent = "Learner";
+            } else {
+                document.getElementById("otherPersonHeader").textContent = "Tutor";
+            }
+
+            displaySessions();
+        }
+
+        init();
     </script>
 </body>
 </html>

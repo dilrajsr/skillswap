@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Live Session</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                SkillSwap <span class="logo-badge">PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="skillsNavLink"><a href="skills.html">Skills</a></li>
+                <li id="findTutorNavLink"><a href="find-tutor.html">Find Tutor</a></li>
+                <li><a href="sessions.html">Sessions</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li><a href="coins.html">Coins</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li id="authLink"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" style="width:100%; max-width:640px;">
+        <h1>Live 1-on-1 Session</h1>
+        <div id="sessionArea"></div>
+    </div>
+
+    <!-- Modern Multi-Column Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SkillSwap</h3>
+                <p>The modern, free platform for collaborative skill exchange. Learn what you love, teach what you know.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="find-tutor.html">Find a Tutor</a></li>
+                    <li><a href="skills.html">Skills Catalog</a></li>
+                    <li><a href="coins.html">Coins &amp; Leaderboard</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Sign Up Free</a></li>
+                    <li><a href="profile.html">Edit Profile</a></li>
+                    <li><a href="sessions.html">My Sessions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SkillSwap. Empowering learners and teachers worldwide.
+        </div>
+    </footer>
+
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
+    <script src="script.js"></script>
+    <script>
+        let user = null;
+        let sessionArea = document.getElementById("sessionArea");
+
+        // remembers what is on screen, so the page only redraws when something changed
+        let lastShown = null;
+
+        async function render() {
+            if (user.role === "admin") {
+                sessionArea.innerHTML = `<p style="color:#64748b; margin-top:20px;">Admins don't take part in sessions.</p>`;
+                return;
+            }
+
+            // the server only sends back this user's own sessions / requests
+            let connections = await getConnections();
+
+            let shown = connections.map((c) => c.id + c.status).join(",");
+            if (shown === lastShown) return;
+            lastShown = shown;
+
+            let active = connections.find((c) => c.status === "active");
+            let pending = connections.filter((c) => c.status === "pending");
+            let lastOne = connections[connections.length - 1];
+
+            if (active) {
+                showActiveSession(active, pending.length);
+            } else if (user.role === "teacher") {
+                showRequestsForTeacher(pending);
+            } else {
+                showStatusForLearner(pending[0], lastOne);
+            }
+        }
+
+        // both people: the running session
+        function showActiveSession(connection, waitingCount) {
+            let otherPersonName = user.role === "teacher" ? connection.learnerName : connection.teacherName;
+            let waitingNote = user.role === "teacher" && waitingCount > 0
+                ? `<p style="color:#64748b; margin-top:20px;">${waitingCount} more request(s) are waiting. End this session to answer them.</p>`
+                : "";
+
+            sessionArea.innerHTML = `
+                <div class="card" style="text-align:center; padding:44px 32px; border-radius:18px; margin-top:20px;">
+                    <div style="width:64px; height:64px; border-radius:50%; background:#eff6ff; color:#2563eb; font-size:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">🤝</div>
+                    <h3 style="font-size:1.4rem;">Connected with ${esc(otherPersonName)}</h3>
+                    <p style="color:#64748b; margin:8px 0 28px;">Live collaborative session on <strong>${esc(connection.skill)}</strong></p>
+                    <button class="btn btn-danger" id="endBtn" style="padding:12px 28px; font-size:1rem;">End Session &amp; Collect Coins</button>
+                </div>
+                ${waitingNote}
+            `;
+
+            document.getElementById("endBtn").addEventListener("click", () => {
+                endSession(connection);
+            });
+        }
+
+        // teacher: the students who want to learn a skill, with Accept / Reject
+        function showRequestsForTeacher(pending) {
+            if (pending.length === 0) {
+                sessionArea.innerHTML = `<p style="color:#64748b; margin-top:20px; font-weight:500;">No active session right now. When a learner requests one of your skills, the request shows up here.</p>`;
+                return;
+            }
+
+            sessionArea.innerHTML = `<h2 style="text-align:left; font-size:20px; margin:20px 0 14px;">Session Requests</h2>`;
+
+            pending.forEach((request) => {
+                let row = document.createElement("div");
+                row.className = "request-row";
+                row.innerHTML = `
+                    <div>
+                        <strong>${esc(request.learnerName)}</strong> wants to learn
+                        <strong>${esc(request.skill)}</strong> with you.
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-primary acceptBtn" style="padding:8px 18px;">Accept</button>
+                        <button class="btn btn-danger rejectBtn" style="padding:8px 18px;">Reject</button>
+                    </div>
+                `;
+                row.querySelector(".acceptBtn").addEventListener("click", () => answerRequest(request, "accept"));
+                row.querySelector(".rejectBtn").addEventListener("click", () => answerRequest(request, "reject"));
+                sessionArea.appendChild(row);
+            });
+        }
+
+        // learner: waiting for an answer, or the last request was rejected, or nothing yet
+        function showStatusForLearner(waiting, lastOne) {
+            if (waiting) {
+                sessionArea.innerHTML = `
+                    <div class="card" style="text-align:center; padding:44px 32px; border-radius:18px; margin-top:20px;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:#fffbeb; font-size:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">⏳</div>
+                        <h3 style="font-size:1.4rem;">Request sent to ${esc(waiting.teacherName)}</h3>
+                        <p style="color:#64748b; margin:8px 0 28px;">Waiting for them to accept your request to learn <strong>${esc(waiting.skill)}</strong>.</p>
+                        <button class="btn btn-secondary" id="cancelBtn" style="padding:10px 24px;">Cancel Request</button>
+                    </div>
+                `;
+                document.getElementById("cancelBtn").addEventListener("click", async () => {
+                    let result = await api("/api/connections/" + waiting.id + "/cancel", "POST");
+                    if (result.status !== 200) alert(result.data.message || "Could not cancel the request.");
+                    lastShown = null;
+                    render();
+                });
+                return;
+            }
+
+            let rejectedNote = lastOne && lastOne.status === "rejected"
+                ? `<div class="error-msg" style="display:block; margin:20px 0 0;">${esc(lastOne.teacherName)} rejected your request to learn ${esc(lastOne.skill)}. You can choose another skill or tutor.</div>`
+                : "";
+
+            sessionArea.innerHTML = `
+                ${rejectedNote}
+                <p style="color:#64748b; margin-top:20px; font-weight:500;">No active session right now. Visit <a href="find-tutor.html" style="color:#2563eb; font-weight:600;">Find Tutor</a>, choose a skill and click "Get Connected" to send a request.</p>
+            `;
+        }
+
+        async function answerRequest(request, answer) {
+            let result = await api("/api/connections/" + request.id + "/" + answer, "POST");
+            if (result.status !== 200) {
+                alert(result.data.message || "Could not answer the request.");
+            }
+            lastShown = null;
+            render();
+        }
+
+        // the server marks the session as ended and gives the coins to both people
+        async function endSession(connection) {
+            let result = await api("/api/connections/" + connection.id + "/end", "POST");
+
+            if (result.status === 200) {
+                alert(`Session ended! You earned ${result.data.earned} coins.`);
+            } else {
+                alert(result.data.message || "Could not end the session.");
+            }
+
+            lastShown = null;
+            render();
+        }
+
+        async function init() {
+            user = await requireLogin();
+            if (!user) return;
+
+            render();
+
+            // keep both people in sync as requests / sessions change
+            // (check the server every 3 seconds)
+            setInterval(render, 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

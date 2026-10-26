@@ -241,27 +241,37 @@
         </div>
     </footer>
 
-    <!-- Preserved EXACT JavaScript Logic Below -->
+    <!-- Page logic: data comes from the server through the /api routes (see script.js) -->
     <script src="script.js"></script>
     <script>
         // Show the top 3 tutors (by coins earned teaching) on the home page
-        let featuredContainer = document.getElementById("featuredTutors");
-        let topTutors = getTutors().sort((a, b) => b.coins - a.coins).slice(0, 3);
+        async function showFeaturedTutors() {
+            let featuredContainer = document.getElementById("featuredTutors");
+            let tutors = await getTutors();
+            let topTutors = tutors.sort((a, b) => b.coins - a.coins).slice(0, 3);
 
-        if (topTutors.length === 0) {
-            featuredContainer.innerHTML = `<p style="color:#777;">No tutors yet. <a href="register.html" style="color:#2fb6c7;">Sign up</a> and be the first to teach a skill!</p>`;
-        } else {
+            if (topTutors.length === 0) {
+                featuredContainer.innerHTML = `<p style="color:#777;">No tutors yet. <a href="register.html" style="color:#2fb6c7;">Sign up</a> and be the first to teach a skill!</p>`;
+                return;
+            }
+
             topTutors.forEach((tutor) => {
                 let card = document.createElement("div");
                 card.className = "card";
                 card.innerHTML = `
-                    <h3>${tutor.name}</h3>
-                    <p>Teaches: ${tutor.teachSkills.join(", ")}</p>
+                    <div class="card-top">
+                        ${avatarHtml(tutor, 52)}
+                        <h3>${esc(tutor.name)}</h3>
+                    </div>
+                    <p>Teaches: ${esc(tutor.teachSkills.join(", ")) || "No skills listed yet"}</p>
                     <p class="rating">🏆 ${tutor.coins} coins earned teaching</p>
+                    <a href="tutor.html?id=${encodeURIComponent(tutor.id)}" class="btn btn-secondary" style="margin-top:16px; text-align:center;">View Profile</a>
                 `;
                 featuredContainer.appendChild(card);
             });
         }
+
+        showFeaturedTutors();
 
         // Fetch a random quote as a simple "Tip of the Day" using async/await
         async function loadTip() {
